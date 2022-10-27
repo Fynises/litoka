@@ -1,11 +1,14 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable indent */
-import path from 'path';
+const path = require('path');
+const nodeExternals = require('webpack-node-externals');
 
 module.exports = [
     {
+        target: 'node',
+        externals: [nodeExternals()],
         name: 'client',
-        entry: './client/src/main.tsx',
+        entry: './client/main.tsx',
         mode: 'development',
         module: {
             rules: [
@@ -34,6 +37,29 @@ module.exports = [
                     }
                 }
             }
+        }
+    },
+    {
+        target: 'node',
+        externals: [nodeExternals()],
+        name: 'server',
+        entry: './server/server.ts',
+        mode: 'development',
+        module: {
+            rules: [
+                {
+                    test: /\.ts?$/,
+                    use: 'ts-loader',
+                    exclude: /node_modules/,
+                },
+            ],
+        },
+        resolve: {
+            extensions: ['.ts', '.js'],
+        },
+        output: {
+            filename: 'server-generated.js',
+            path: path.resolve(__dirname, 'serverdist'),
         }
     }
 ];
