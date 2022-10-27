@@ -5,11 +5,8 @@ const nodeExternals = require('webpack-node-externals');
 
 module.exports = [
     {
-        target: 'node',
-        externals: [nodeExternals()],
         name: 'client',
         entry: './client/main.tsx',
-        mode: 'development',
         module: {
             rules: [
                 {
@@ -44,7 +41,6 @@ module.exports = [
         externals: [nodeExternals()],
         name: 'server',
         entry: './server/server.ts',
-        mode: 'development',
         module: {
             rules: [
                 {
