@@ -102,3 +102,9 @@ dist
 
 # TernJS port file
 .tern-port
+
+# server output
+serverdist
+
+# start script
+start.sh
