@@ -39,9 +39,9 @@ const Player = () => {
           hash: hash(optionsObj)
         }));
       };
-
+      //placeholder for reference later
       ws.onmessage = (data) => {
-        console.log(`data recieved: ${data}`);
+        console.log(`data recieved: ${data.data}`);
       };
     });
   });

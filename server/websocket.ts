@@ -9,7 +9,7 @@ const initWebSocketServer = () => {
   wss.on('connection', (ws) => {
     ws.on('message', (data) => {
       const dataJson: ClientConnectMessage = JSON.parse(data.toString());
-      console.log(`recieved new connection: ${dataJson}`);
+      console.log(`recieved new connection: ${JSON.stringify(dataJson)}`);
       const serverWsData: ServerWSObject = {
         wsObj: ws,
         clientInfo: dataJson
