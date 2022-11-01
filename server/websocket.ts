@@ -1,12 +1,24 @@
-import {WebSocketServer} from 'ws';
+import { WebSocketServer } from 'ws';
 import config from '../config/config';
+import { ClientConnectMessage, ServerWSObject } from './server-types';
+import wsMap from './websocket-map';
 
 const initWebSocketServer = () => {
   const wss = new WebSocketServer({ port: parseInt(config.wsPort) });
 
   wss.on('connection', (ws) => {
     ws.on('message', (data) => {
-      console.log(JSON.parse(data.toString()));
+      const dataJson: ClientConnectMessage = JSON.parse(data.toString());
+      console.log(`recieved new connection: ${dataJson}`);
+      const serverWsData: ServerWSObject = {
+        wsObj: ws,
+        clientInfo: dataJson
+      };
+      if (wsMap.get(dataJson.options.channel) === undefined) {
+        wsMap.set(dataJson.options.channel, [serverWsData]);
+      } else {
+        wsMap.get(dataJson.options.channel).push(serverWsData);
+      }
     });
   });
 };
