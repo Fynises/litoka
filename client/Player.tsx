@@ -29,7 +29,7 @@ const Player = () => {
       ws.onopen = () => {
         console.log('connecting to server websocket');
         const optionsObj = {
-          channel: searchParams.get('channel'),
+          channel: searchParams.get('channel').toLowerCase(),
           allowMods: searchParams.get('allowMods'),
           filterType: searchParams.get('filterType'),
           filterParams: searchParams.get('filterParams')
