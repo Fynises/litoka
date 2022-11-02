@@ -16,3 +16,12 @@ export interface ServerWSObject {
   wsObj: WebSocket,
   clientInfo: ClientConnectMessage
 }
+
+export interface ShoutOutCommand {
+  fromChannel: string,
+  userName: string,
+  userId: string,
+  isMod: boolean,
+  overrideRandom: boolean,
+  targetChannel: string
+}
