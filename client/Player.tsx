@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { fetchWsUrl } from './api-app';
 import WebSocket from 'isomorphic-ws';
 import hash from 'object-hash';
@@ -8,9 +8,16 @@ interface WebSocketURLApiReturn {
   wsUrl: string
 }
 
+interface ClipData {
+  clip_url: string,
+  streamer: string
+}
+
 const Player = () => {
 
   const searchParams: URLSearchParams = new URLSearchParams(document.location.search);
+
+  const [clips, setClips] = useState<ClipData[]>([]);
 
   /**
    * planned url query params:
@@ -41,13 +48,28 @@ const Player = () => {
       };
       //placeholder for reference later
       ws.onmessage = (data) => {
-        console.log(`data recieved: ${data.data}`);
+        const dataJson: ClipData = JSON.parse(data.data.toString());
+        console.log(`data recieved: ${dataJson}`);
+        setClips(previous => [...previous, dataJson]);
       };
     });
-  });
+  }, []);
+
+  //encountering Cross-Origin Read Blocking errors
 
   return (
-    <></>
+    <>
+      {
+        clips.length != 0 && (<span>
+          <video width='100%' autoPlay>
+            <source
+              src={clips.pop().clip_url}
+              type='video/mp4'
+            />
+          </video>
+        </span>)
+      }
+    </>
   );
 };
 

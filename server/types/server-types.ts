@@ -26,3 +26,8 @@ export interface ShoutOutCommand {
   overrideRandom: boolean,
   targetChannel: string
 }
+
+export interface ClipData {
+  clip_url: string,
+  streamer: string
+}

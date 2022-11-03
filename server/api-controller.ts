@@ -1,4 +1,4 @@
-import { ShoutOutCommand } from './types/server-types';
+import { ClipData, ShoutOutCommand } from './types/server-types';
 import wsMap from './websocket-map';
 import config from '../config/config';
 
@@ -6,9 +6,9 @@ const sendClip = async (command: ShoutOutCommand) => {
   wsMap.get(command.fromChannel).forEach(async (element) => {
     if (command.isStreamer || (command.isMod && element.clientInfo.options.allowMods)) {
       const streamerId: string = (await getTargetStreamerId(command.targetChannel)).data[0].id;
-      const randomClip: string = await getRandomClip(streamerId);
+      const randomClip: ClipData = await getRandomClip(streamerId);
       if (randomClip !== null) {
-        element.wsObj.send(randomClip);
+        element.wsObj.send(JSON.stringify(randomClip));
       }
     }
   });
@@ -33,7 +33,12 @@ const getRandomClip = async (streamerId: string) => {
   const clips: TwitchClipsData[] = (await getRandomClipsFromApi(streamerId)).data;
   if (clips.length !== 0) {
     console.log(clips);
-    return clips[Math.floor(Math.random() * clips.length)].embed_url;
+    const randomClip: TwitchClipsData = clips[Math.floor(Math.random() * clips.length)];
+    const clip: ClipData = {
+      clip_url: randomClip.url,
+      streamer: randomClip.broadcaster_name
+    };
+    return clip;
   } else {
     return null;
   }
