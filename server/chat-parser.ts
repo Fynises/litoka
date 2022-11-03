@@ -1,4 +1,4 @@
-import { ShoutOutCommand } from './server-types';
+import { ShoutOutCommand } from './types/server-types';
 
 const parseIRC = (message: string): ShoutOutCommand => {
 
@@ -12,16 +12,19 @@ const parseIRC = (message: string): ShoutOutCommand => {
   //check that the message contains a valid command
   const lastelement: string = splittedmessage[splittedmessage.length-1];
   const splitlast: string = lastelement.split(':')[2];
-  if (!splitlast.includes('!so')) {
+  if (!splitlast.includes('!so') && !splitlast.includes('@')) {
     return null;
   }
 
   let userName: string;
   let userId: string;
+  let isStreamer: boolean;
   let isMod: boolean;
 
   splittedmessage.forEach((element) => {
-    if (element.includes('display-name')) {
+    if (element.includes('badges')) {
+      isStreamer = element.split('=')[1].includes('broadcaster');
+    } else if (element.includes('display-name')) {
       userName = element.split('=')[1];
     } else if (element.includes('mod')) {
       isMod = !element.split('=')[1].includes('0');
@@ -36,8 +39,9 @@ const parseIRC = (message: string): ShoutOutCommand => {
 
   const command: ShoutOutCommand = {
     fromChannel: fromChannel,
-    userName: userName,
-    userId: userId,
+    requesterName: userName,
+    requesterId: userId,
+    isStreamer: isStreamer,
     isMod: isMod,
     overrideRandom: overrideRandom,
     targetChannel: targetChannel

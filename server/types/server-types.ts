@@ -19,8 +19,9 @@ export interface ServerWSObject {
 
 export interface ShoutOutCommand {
   fromChannel: string,
-  userName: string,
-  userId: string,
+  requesterName: string,
+  requesterId: string,
+  isStreamer: boolean,
   isMod: boolean,
   overrideRandom: boolean,
   targetChannel: string

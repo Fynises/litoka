@@ -1,6 +1,6 @@
 import { WebSocketServer } from 'ws';
 import config from '../config/config';
-import { ClientConnectMessage, ServerWSObject } from './server-types';
+import { ClientConnectMessage, ServerWSObject } from './types/server-types';
 import wsMap from './websocket-map';
 import { connectToChannel } from './twitchws-controller';
 

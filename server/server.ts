@@ -8,7 +8,7 @@ initWebSocketServer();
 twitchWs.on('open', () => {
   console.log('connected to twitch api');
   twitchWs.send('CAP REQ :twitch.tv/membership twitch.tv/tags twitch.tv/commands');
-  twitchWs.send(`PASS oauth:${config.twitchOAuth}`);
+  twitchWs.send(`PASS oauth:${config.twitchAccessToken}`);
   twitchWs.send('NICK opensobot');
 });
 
