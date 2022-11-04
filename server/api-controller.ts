@@ -1,6 +1,7 @@
 import { ClipData, ShoutOutCommand } from './types/server-types';
 import wsMap from './websocket-map';
 import config from '../config/config';
+import { getRawClip } from './processor';
 
 const sendClip = async (command: ShoutOutCommand) => {
   wsMap.get(command.fromChannel).forEach(async (element) => {
@@ -35,8 +36,9 @@ const getRandomClip = async (streamerId: string) => {
     console.log(clips);
     const randomClip: TwitchClipsData = clips[Math.floor(Math.random() * clips.length)];
     const clip: ClipData = {
-      clip_url: randomClip.url,
-      streamer: randomClip.broadcaster_name
+      clip_url: getRawClip(randomClip.thumbnail_url),
+      streamer: randomClip.broadcaster_name,
+      duration: randomClip.duration
     };
     return clip;
   } else {
@@ -46,7 +48,7 @@ const getRandomClip = async (streamerId: string) => {
 
 const getRandomClipsFromApi = async (streamerId: string) => {
   try {
-    const response = await fetch(`https://api.twitch.tv/helix/clips?broadcaster_id=${streamerId}&first=100`, {
+    const response = await fetch(`https://api.twitch.tv/helix/clips?broadcaster_id=${streamerId}&first=5`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${config.twitchOAuth}`,

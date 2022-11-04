@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { fetchWsUrl } from './api-app';
 import WebSocket from 'isomorphic-ws';
 import hash from 'object-hash';
+import ReactPlayer from 'react-player';
 
 interface WebSocketURLApiReturn {
   wsUrl: string
@@ -10,7 +11,8 @@ interface WebSocketURLApiReturn {
 
 interface ClipData {
   clip_url: string,
-  streamer: string
+  streamer: string,
+  clipDuration: number,
 }
 
 const Player = () => {
@@ -50,23 +52,27 @@ const Player = () => {
       ws.onmessage = (data) => {
         const dataJson: ClipData = JSON.parse(data.data.toString());
         console.log(`data recieved: ${dataJson}`);
+        console.log(`url recieved: ${dataJson.clip_url}`);
         setClips(previous => [...previous, dataJson]);
       };
     });
   }, []);
 
-  //encountering Cross-Origin Read Blocking errors
+  const shiftNext = (url: string) => {
+    setClips(clips.filter(item => item.clip_url !== url));
+  };
 
   return (
     <>
       {
         clips.length != 0 && (<span>
-          <video width='100%' autoPlay>
-            <source
-              src={clips.pop().clip_url}
-              type='video/mp4'
-            />
-          </video>
+          <ReactPlayer
+            url={clips[0].clip_url}
+            playing={true}
+            playsinline={true}
+            muted={false}
+            onEnded={() => shiftNext(clips[0].clip_url)}
+          />
         </span>)
       }
     </>

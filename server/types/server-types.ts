@@ -29,5 +29,6 @@ export interface ShoutOutCommand {
 
 export interface ClipData {
   clip_url: string,
-  streamer: string
+  streamer: string,
+  duration: number
 }
