@@ -34,27 +34,31 @@ const Player = () => {
     const signal = abortController.signal;
     fetchWsUrl(signal).then((data: WebSocketURLApiReturn) => {
       console.log(`fetched websocket url from server: ${data.wsUrl}`);
-      const ws = new WebSocket(data.wsUrl);
-      ws.onopen = () => {
-        console.log('connecting to server websocket');
-        const optionsObj = {
-          channel: searchParams.get('channel').toLowerCase(),
-          allowMods: searchParams.get('allowMods'),
-          filterType: searchParams.get('filterType'),
-          filterParams: searchParams.get('filterParams')
+      try {
+        const ws = new WebSocket(data.wsUrl);
+        ws.onopen = () => {
+          console.log('connecting to server websocket');
+          const optionsObj = {
+            channel: searchParams.get('channel').toLowerCase(),
+            allowMods: searchParams.get('allowMods'),
+            filterType: searchParams.get('filterType'),
+            filterParams: searchParams.get('filterParams')
+          };
+          ws.send(JSON.stringify({
+            options: optionsObj,
+            hash: hash(optionsObj)
+          }));
         };
-        ws.send(JSON.stringify({
-          options: optionsObj,
-          hash: hash(optionsObj)
-        }));
-      };
-      //placeholder for reference later
-      ws.onmessage = (data) => {
-        const dataJson: ClipData = JSON.parse(data.data.toString());
-        console.log(`data recieved: ${dataJson}`);
-        console.log(`url recieved: ${dataJson.clip_url}`);
-        setClips(previous => [...previous, dataJson]);
-      };
+        //placeholder for reference later
+        ws.onmessage = (data) => {
+          const dataJson: ClipData = JSON.parse(data.data.toString());
+          console.log(`data recieved: ${dataJson}`);
+          console.log(`url recieved: ${dataJson.clip_url}`);
+          setClips(previous => [...previous, dataJson]);
+        };
+      } catch (err) {
+        console.log(err);
+      }
     });
   }, []);
 
