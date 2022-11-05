@@ -24,8 +24,8 @@ app.get('/api/getwebsocket', (req, res) => {
 app.post('/api/testwebsocket', (req, res) => {
   const target: string = req.body.target;
   if (wsMap.get(target) !== undefined) {
-    wsMap.get(target).forEach((i) => {
-      i.wsObj.send('message from server');
+    wsMap.get(target).forEach((v,k) => {
+      k.send('message from server');
     });
     return res.status(200).json({ message: 'successfully sent websocket messages'});
   } else {

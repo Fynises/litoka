@@ -4,13 +4,13 @@ import config from '../config/config';
 import { getRawClip } from './processor';
 
 const sendClip = async (command: ShoutOutCommand) => {
-  wsMap.get(command.fromChannel).forEach(async (element) => {
-    if (command.isStreamer || (command.isMod && element.clientInfo.options.allowMods)) {
+  wsMap.get(command.fromChannel).forEach(async (v,k) => {
+    if (command.isStreamer || (command.isMod && v.allowMods)) {
       try {
         const streamerId: string = (await getTargetStreamerId(command.targetChannel)).data[0].id;
         const randomClip: ClipData = await getRandomClip(streamerId);
         if (randomClip !== null) {
-          element.wsObj.send(JSON.stringify(randomClip));
+          k.send(JSON.stringify(randomClip));
           console.log(`sent: ${randomClip.clip_url} to client`);
         }
       } catch (err) {
