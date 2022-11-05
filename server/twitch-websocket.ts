@@ -2,7 +2,7 @@ import WebSocket from 'ws';
 import config from '../config/config';
 import { sendClip } from './api-controller';
 import { parseIRC } from './chat-parser';
-import { ShoutOutCommand } from './types/server-types';
+import { ShoutOutCommand } from '../types/server-types';
 
 const twitchWs: WebSocket = new WebSocket(config.twitchChatUrl);
 

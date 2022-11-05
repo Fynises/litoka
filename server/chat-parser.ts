@@ -1,4 +1,4 @@
-import { ShoutOutCommand } from './types/server-types';
+import { ShoutOutCommand } from '../types/server-types';
 
 const parseIRC = (message: string): ShoutOutCommand => {
 
