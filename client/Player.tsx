@@ -70,12 +70,24 @@ const Player = () => {
     <>
       {
         clips.length != 0 && (<span>
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', fontFamily: 'sans-serif', color: 'white' }}>
-            <h1>{`Check Out ${clips[0].streamer}!`}</h1>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              fontFamily: 'sans-serif',
+              color: 'white',
+              fontSize: '52px',
+              paddingBottom: 3,
+              textShadow: '-4px -4px 0 #000, 0 -4px 0 #000, 4px -4px 0 #000, 4px 0 0 #000, 4px 4px 0 #000, 0 4px 0 #000, -4px 4px 0 #000, -4px 0 0 #000'
+            }}
+          >
+            {`Check out ${clips[0].streamer}!`}
           </div>
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <ReactPlayer
-              width='100%'
+              width='1280px'
+              height='720px'
               url={clips[0].clip_url}
               playsinline={true}
               playing={true}
