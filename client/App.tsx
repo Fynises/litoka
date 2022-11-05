@@ -1,27 +1,30 @@
 import * as React from 'react';
-import Player from './Player';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import ErrorPage from './ErrorPage';
+import Shoutout from './Shoutout';
+
 
 const App = () => {
-
-  let message: string;
-  let hasError: boolean;
-
-  const searchParams: URLSearchParams = new URLSearchParams(document.location.search);
-  if (!searchParams.has('channel')) {
-    console.log(message);
-    message = 'there is an error with the url parameters, refer to: https://github.com/Fynises/twitch-open-so for further documentation';
-    console.log(message);
-    hasError = true;
-  }
-
   return (
     <>
-      <p>{message}</p>
-      {
-        !hasError && (<span>
-          <Player />
-        </span>)
-      }
+      <Router>
+        <Routes>
+          <Route path='/'
+            element={
+              <React.Suspense fallback={<>...</>}>
+                <ErrorPage />
+              </React.Suspense>
+            }
+          />
+          <Route path='/options'
+            element={
+              <React.Suspense fallback={<>...</>}>
+                <Shoutout />
+              </React.Suspense>
+            }
+          />
+        </Routes>
+      </Router>
     </>
   );
 };
