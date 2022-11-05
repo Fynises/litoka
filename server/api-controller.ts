@@ -53,7 +53,7 @@ const getRandomClip = async (streamerId: string) => {
 
 const getRandomClipsFromApi = async (streamerId: string) => {
   try {
-    const response = await fetch(`https://api.twitch.tv/helix/clips?broadcaster_id=${streamerId}&first=5`, {
+    const response = await fetch(`https://api.twitch.tv/helix/clips?broadcaster_id=${streamerId}&first=100`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${config.twitchOAuth}`,
