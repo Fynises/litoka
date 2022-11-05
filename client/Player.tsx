@@ -71,9 +71,10 @@ const Player = () => {
       {
         clips.length != 0 && (<span>
           <ReactPlayer
+            width='100%'
             url={clips[0].clip_url}
-            playing={true}
             playsinline={true}
+            playing={true}
             muted={false}
             onEnded={() => shiftNext(clips[0].clip_url)}
           />
