@@ -10,7 +10,7 @@ const parseIRC = (message: string): ShoutOutCommand => {
   console.log(splittedmessage);
 
   //check that the message contains a valid command
-  const lastelement: string = splittedmessage[splittedmessage.length-1];
+  const lastelement: string = splittedmessage[splittedmessage.length - 1];
   const splitlast: string = lastelement.split(':')[2];
   if (!splitlast.includes('!so') && !splitlast.includes('@')) {
     return null;
@@ -33,22 +33,26 @@ const parseIRC = (message: string): ShoutOutCommand => {
     }
   });
 
-  const fromChannel = lastelement.split('#')[1].split(' ')[0];
-  const targetChannel = lastelement.split('#')[1].split('@')[1].replace('\r\n', '');
-  const overrideRandom = lastelement.includes('-r');
+  try {
+    const fromChannel = lastelement.split('#')[1].split(' ')[0];
+    const targetChannel = lastelement.split('#')[1].split('@')[1].replace('\r\n', '');
+    const overrideRandom = lastelement.includes('-r');
 
-  const command: ShoutOutCommand = {
-    fromChannel: fromChannel,
-    requesterName: userName,
-    requesterId: userId,
-    isStreamer: isStreamer,
-    isMod: isMod,
-    overrideRandom: overrideRandom,
-    targetChannel: targetChannel
-  };
+    const command: ShoutOutCommand = {
+      fromChannel: fromChannel,
+      requesterName: userName,
+      requesterId: userId,
+      isStreamer: isStreamer,
+      isMod: isMod,
+      overrideRandom: overrideRandom,
+      targetChannel: targetChannel
+    };
 
-  return command;
-
+    return command;
+  } catch (err) {
+    console.log(err);
+    return null;
+  }
 };
 
 export {
