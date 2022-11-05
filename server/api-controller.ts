@@ -10,6 +10,7 @@ const sendClip = async (command: ShoutOutCommand) => {
       const randomClip: ClipData = await getRandomClip(streamerId);
       if (randomClip !== null) {
         element.wsObj.send(JSON.stringify(randomClip));
+        console.log(`sent: ${randomClip.clip_url} to client`);
       }
     }
   });
