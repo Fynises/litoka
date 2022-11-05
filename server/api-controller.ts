@@ -1,4 +1,4 @@
-import { ClipData, ShoutOutCommand } from './types/server-types';
+import { ClipData, ShoutOutCommand } from '../types/server-types';
 import wsMap from './websocket-map';
 import config from '../config/config';
 import { getRawClip } from './processor';
