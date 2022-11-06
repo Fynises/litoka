@@ -11,7 +11,7 @@ const initWebSocketServer = () => {
     ws.on('message', (data) => {
       const dataJson: ClientConnectMessage = JSON.parse(data.toString());
       console.log(`recieved new connection: ${JSON.stringify(dataJson)}`);
-
+      console.log(dataJson.options.allowMods);
       if (wsMap.get(dataJson.options.channel) === undefined) {
         wsMap.set(dataJson.options.channel, new Map().set(ws, dataJson.options));
         connectToChannel(dataJson.options.channel);

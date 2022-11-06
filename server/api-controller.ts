@@ -5,7 +5,7 @@ import { getRawClip } from './processor';
 
 const sendClip = async (command: ShoutOutCommand) => {
   wsMap.get(command.fromChannel).forEach(async (v,k) => {
-    if (command.isStreamer || (command.isMod && v.allowMods)) {
+    if (command.isStreamer || (command.isMod && v.allowMods !== 'false')) {
       try {
         const streamerId: string = (await getTargetStreamerId(command.targetChannel)).data[0].id;
         const randomClip: ClipData = await getRandomClip(streamerId);
@@ -38,7 +38,7 @@ const getTargetStreamerId = async (name: string) => {
 const getRandomClip = async (streamerId: string) => {
   const clips: TwitchClipsData[] = (await getRandomClipsFromApi(streamerId)).data;
   if (clips.length !== 0) {
-    console.log(clips);
+    console.log(`retrieved ${clips.length} clips from twitch api`);
     const randomClip: TwitchClipsData = clips[Math.floor(Math.random() * clips.length)];
     const clip: ClipData = {
       clip_url: getRawClip(randomClip.thumbnail_url),
