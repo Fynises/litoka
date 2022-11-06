@@ -86,8 +86,8 @@ const Player = () => {
           </div>
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <ReactPlayer
-              width='1280px'
-              height='720px'
+              width='800px'
+              height='450px'
               url={clips[0].clip_url}
               playsinline={true}
               playing={true}
