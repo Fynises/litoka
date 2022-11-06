@@ -27,6 +27,16 @@ export interface ShoutOutCommand {
   targetChannel: string
 }
 
+export interface TwitchMessage {
+  chatterName: string,
+  chatterId: string,
+  channel: string,
+  isBroadcaster: boolean,
+  isMod: boolean,
+  isSubscriber: boolean,
+  message: string
+}
+
 export interface ClipData {
   clip_url: string,
   streamer: string,
