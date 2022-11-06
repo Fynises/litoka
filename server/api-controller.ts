@@ -4,10 +4,29 @@ import config from '../config/config';
 import { getRawClip } from './processor';
 
 const sendClip = async (command: ShoutOutCommand) => {
-  wsMap.get(command.fromChannel).forEach(async (v,k) => {
+  wsMap.get(command.fromChannel).forEach(async (v, k) => {
     if (command.isStreamer || (command.isMod && v.allowMods !== 'false')) {
       try {
         const streamerId: string = (await getTargetStreamerId(command.targetChannel)).data[0].id;
+
+        /**
+         * this code for filtering by dates is to be changed in the future
+         * this is a testing solution for now
+         */
+
+        if (v.filterType === 'days' && (v.filterParams !== null || !Number.isNaN(v.filterParams))) {
+          console.log('filter by days called');
+          const currentDate: Date = new Date();
+          const startDate: Date = new Date;
+          startDate.setDate(startDate.getDate() - parseInt(v.filterParams));
+          const filteredRandomClip: ClipData = await getRandomClipFiltered(streamerId, currentDate, startDate);
+          if (filteredRandomClip !== null) {
+            k.send(JSON.stringify(filteredRandomClip));
+            console.log(`send: ${filteredRandomClip.clip_url} to client`);
+          }
+          return;
+        }
+
         const randomClip: ClipData = await getRandomClip(streamerId);
         if (randomClip !== null) {
           k.send(JSON.stringify(randomClip));
@@ -54,6 +73,43 @@ const getRandomClip = async (streamerId: string) => {
 const getRandomClipsFromApi = async (streamerId: string) => {
   try {
     const response = await fetch(`https://api.twitch.tv/helix/clips?broadcaster_id=${streamerId}&first=100`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${config.twitchOAuth}`,
+        'Client-Id': config.twitchClientId
+      }
+    });
+    return await response.json() as TwitchGetClips;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+const getRandomClipFiltered = async (streamerId: string, endDate: Date, startDate: Date) => {
+  const clips: TwitchClipsData[] = (await getClipsFilterDays(streamerId, endDate, startDate)).data;
+  if (clips.length !== 0) {
+    console.log(`retrieved ${clips.length} clips from twitch api`);
+    const randomClip: TwitchClipsData = clips[Math.floor(Math.random() * clips.length)];
+    const clip: ClipData = {
+      clip_url: getRawClip(randomClip.thumbnail_url),
+      streamer: randomClip.broadcaster_name,
+      duration: randomClip.duration
+    };
+    return clip;
+  } else {
+    return await getRandomClip(streamerId);
+  }
+};
+
+const getClipsFilterDays = async (streamerId: string, endDate: Date, startDate: Date) => {
+  try {
+    const params: URLSearchParams = new URLSearchParams();
+    params.append('broadcaster_id', streamerId);
+    params.append('ended_at', endDate.toISOString());
+    params.append('started_at', startDate.toISOString());
+    params.append('first', '100');
+    console.log(params.toString());
+    const response = await fetch(`https://api.twitch.tv/helix/clips?${params.toString()}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${config.twitchOAuth}`,
