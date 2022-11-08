@@ -11,6 +11,7 @@ twitchWs.on('message', (data) => {
   console.log(`recieved from twitch: ${data}`);
   if (data.toString().includes('PRIVMSG')) {
     const parsedIrc: TwitchMessage = parseIRC(data.toString());
+    if (parsedIrc === null) return;
     console.log(parsedIrc);
     const command: ShoutOutCommand = parseShoutOutCommand(parsedIrc);
     if (command !== null) {
