@@ -19,6 +19,9 @@ twitchWs.on('message', (data) => {
       sendClip(command);
     }
   }
+  if (data.toString() === 'PING :tmi.twitch.tv') {
+    twitchWs.send('PONG :tmi.twitch.tv');
+  }
 });
 
 export {
