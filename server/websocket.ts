@@ -28,16 +28,14 @@ const initWebSocketServer = () => {
       });
     });
 
-    ws.on('pong', () => {
-      console.log('pong from client');
-    });
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    ws.on('pong', () => {});
 
     setInterval(() => {
-      console.log('ping from server');
-      wss.clients.forEach((ws) => {
-        ws.ping();
+      wss.clients.forEach((client) => {
+        client.ping();
       });
-    },200000);
+    },60000);
 
   });
 };
