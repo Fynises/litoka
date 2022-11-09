@@ -20,6 +20,20 @@ const initWebSocketServer = () => {
         connectToChannel(dataJson.options.channel);
       }
     });
+
+    ws.on('close', () => {
+      console.log('client connection closed');
+      wsMap.forEach((v,k) => {
+        v.delete(ws);
+      });
+    });
+
+    setInterval(() => {
+      wss.clients.forEach((ws) => {
+        ws.ping();
+      });
+    },300000);
+
   });
 };
 
