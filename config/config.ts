@@ -12,7 +12,7 @@ const config = {
   twitchClientSecret: process.env.TWITCH_CLIENT_SECRET,
   twitchAccessToken: process.env.TWITCH_ACCESS_TOKEN || '',
   twitchOAuth: process.env.TWITCH_OAUTH || '',
-  twitchRefresh: ''
+  twitchRefresh: process.env.TWITCH_REFRESH
 };
 
 export default config;
