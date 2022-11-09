@@ -28,11 +28,16 @@ const initWebSocketServer = () => {
       });
     });
 
+    ws.on('pong', () => {
+      console.log('pong from client');
+    });
+
     setInterval(() => {
+      console.log('ping from server');
       wss.clients.forEach((ws) => {
         ws.ping();
       });
-    },300000);
+    },200000);
 
   });
 };
