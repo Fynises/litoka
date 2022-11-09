@@ -35,7 +35,7 @@ const initWebSocketServer = () => {
       wss.clients.forEach((client) => {
         client.ping();
       });
-    },60000);
+    },30000);
 
   });
 };
