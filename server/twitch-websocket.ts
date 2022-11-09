@@ -20,6 +20,7 @@ twitchWs.on('message', (data) => {
     }
   }
   if (data.toString() === 'PING :tmi.twitch.tv') {
+    console.log('sent pong to irc');
     twitchWs.send('PONG :tmi.twitch.tv');
   }
 });
