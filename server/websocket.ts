@@ -21,14 +21,12 @@ const initWebSocketServer = () => {
       }
     });
 
-    /* temporary comment out for fix
     ws.on('close', () => {
       console.log('connection closed');
       wsMap.forEach((v,k) => {
         v.delete(ws);
       });
     });
-    */
   });
 };
 
