@@ -12,6 +12,7 @@ interface WebSocketURLApiReturn {
 interface ClipData {
   clip_url: string,
   streamer: string,
+  profile_pic: string,
   clipDuration: number,
 }
 
@@ -73,7 +74,7 @@ const Player = () => {
           <div
             style={{
               display: 'flex',
-              justifyContent: 'center',
+              justifyContent: 'space-around',
               alignItems: 'center',
               fontFamily: 'sans-serif',
               color: 'white',
@@ -83,6 +84,12 @@ const Player = () => {
             }}
           >
             {`Check out ${clips[0].streamer}!`}
+            <img
+              src={clips[0].profile_pic}
+              width={96}
+              height={96}
+              alt='profile_pic'
+            />
           </div>
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <ReactPlayer

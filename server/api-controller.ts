@@ -1,4 +1,4 @@
-import { ClipData, ShoutOutCommand } from '../types/server-types';
+import { ClipData, ShoutOutCommand, Streamer } from '../types/server-types';
 import wsMap from './websocket-map';
 import config from '../config/config';
 import { getRawClip } from './processor';
@@ -7,7 +7,11 @@ const sendClip = async (command: ShoutOutCommand) => {
   wsMap.get(command.fromChannel).forEach(async (v, k) => {
     if (command.isStreamer || (command.isMod && v.allowMods !== 'false')) {
       try {
-        const streamerId: string = (await getTargetStreamerId(command.targetChannel)).data[0].id;
+        const streamerData = (await getTargetStreamerId(command.targetChannel)).data[0];
+        const streamer: Streamer = {
+          id: streamerData.id,
+          profilePic: streamerData.profile_image_url
+        };
 
         /**
          * this code for filtering by dates is to be changed in the future
@@ -19,15 +23,15 @@ const sendClip = async (command: ShoutOutCommand) => {
           const currentDate: Date = new Date();
           const startDate: Date = new Date;
           startDate.setDate(startDate.getDate() - parseInt(v.filterParams));
-          const filteredRandomClip: ClipData = await getRandomClipFiltered(streamerId, currentDate, startDate);
+          const filteredRandomClip: ClipData = await getRandomClipFiltered(streamer, currentDate, startDate);
           if (filteredRandomClip !== null) {
             k.send(JSON.stringify(filteredRandomClip));
-            console.log(`send: ${filteredRandomClip.clip_url} to client`);
+            console.log(`sent: ${filteredRandomClip.clip_url} to client`);
           }
           return;
         }
 
-        const randomClip: ClipData = await getRandomClip(streamerId);
+        const randomClip: ClipData = await getRandomClip(streamer);
         if (randomClip !== null) {
           k.send(JSON.stringify(randomClip));
           console.log(`sent: ${randomClip.clip_url} to client`);
@@ -54,14 +58,15 @@ const getTargetStreamerId = async (name: string) => {
   }
 };
 
-const getRandomClip = async (streamerId: string) => {
-  const clips: TwitchClipsData[] = (await getRandomClipsFromApi(streamerId)).data;
+const getRandomClip = async (streamer: Streamer) => {
+  const clips: TwitchClipsData[] = (await getRandomClipsFromApi(streamer.id)).data;
   if (clips.length !== 0) {
     console.log(`retrieved ${clips.length} clips from twitch api`);
     const randomClip: TwitchClipsData = clips[Math.floor(Math.random() * clips.length)];
     const clip: ClipData = {
       clip_url: getRawClip(randomClip.thumbnail_url),
       streamer: randomClip.broadcaster_name,
+      profile_pic: streamer.profilePic,
       duration: randomClip.duration
     };
     return clip;
@@ -85,19 +90,20 @@ const getRandomClipsFromApi = async (streamerId: string) => {
   }
 };
 
-const getRandomClipFiltered = async (streamerId: string, endDate: Date, startDate: Date) => {
-  const clips: TwitchClipsData[] = (await getClipsFilterDays(streamerId, endDate, startDate)).data;
+const getRandomClipFiltered = async (streamer: Streamer, endDate: Date, startDate: Date) => {
+  const clips: TwitchClipsData[] = (await getClipsFilterDays(streamer.id, endDate, startDate)).data;
   if (clips.length !== 0) {
     console.log(`retrieved ${clips.length} clips from twitch api`);
     const randomClip: TwitchClipsData = clips[Math.floor(Math.random() * clips.length)];
     const clip: ClipData = {
       clip_url: getRawClip(randomClip.thumbnail_url),
       streamer: randomClip.broadcaster_name,
+      profile_pic: streamer.profilePic,
       duration: randomClip.duration
     };
     return clip;
   } else {
-    return await getRandomClip(streamerId);
+    return await getRandomClip(streamer);
   }
 };
 

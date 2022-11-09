@@ -40,5 +40,11 @@ export interface TwitchMessage {
 export interface ClipData {
   clip_url: string,
   streamer: string,
+  profile_pic: string,
   duration: number
+}
+
+export interface Streamer {
+  id: string,
+  profilePic:string
 }
