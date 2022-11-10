@@ -16,7 +16,7 @@ const App = () => {
               </React.Suspense>
             }
           />
-          <Route path='/options'
+          <Route path='/shoutout'
             element={
               <React.Suspense fallback={<>...</>}>
                 <Shoutout />
