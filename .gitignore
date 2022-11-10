@@ -108,3 +108,6 @@ serverdist
 
 # start script
 start.sh
+
+#rust target folder
+server/target
