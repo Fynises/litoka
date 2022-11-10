@@ -23,7 +23,7 @@ const initWebSocketServer = () => {
 
     ws.on('close', () => {
       console.log('client connection closed');
-      wsMap.forEach((v,k) => {
+      wsMap.forEach((v, k) => {
         v.delete(ws);
       });
     });
@@ -31,13 +31,15 @@ const initWebSocketServer = () => {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     ws.on('pong', () => {});
 
-    setInterval(() => {
-      wss.clients.forEach((client) => {
-        client.ping();
-      });
-    },30000);
-
   });
+
+  setInterval(() => {
+    console.log('ping');
+    wss.clients.forEach((client) => {
+      client.ping();
+    });
+  }, 20000);
+
 };
 ////textShadow: '-4px -4px 0 #000, 0 -4px 0 #000, 4px -4px 0 #000, 4px 0 0 #000, 4px 4px 0 #000, 0 4px 0 #000, -4px 4px 0 #000, -4px 0 0 #000'
 export default initWebSocketServer;
