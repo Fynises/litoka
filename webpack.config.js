@@ -36,26 +36,4 @@ module.exports = [
             }
         }
     },
-    {
-        target: 'node',
-        externals: [nodeExternals()],
-        name: 'server',
-        entry: './server/server.ts',
-        module: {
-            rules: [
-                {
-                    test: /\.ts?$/,
-                    use: 'ts-loader',
-                    exclude: /node_modules/,
-                },
-            ],
-        },
-        resolve: {
-            extensions: ['.ts', '.js'],
-        },
-        output: {
-            filename: 'server-generated.js',
-            path: path.resolve(__dirname, 'serverdist'),
-        }
-    }
 ];
