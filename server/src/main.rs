@@ -1,7 +1,7 @@
-use actix_web::{web, App, HttpServer, middleware::Logger};
+use actix_web::{App, HttpServer, middleware::Logger};
 use std::path::Path;
 use std::io::Result;
-use actix_files::{NamedFile, Files};
+use actix_files::Files;
 
 mod routes;
 use routes::index_routes::index;
