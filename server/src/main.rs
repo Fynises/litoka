@@ -5,6 +5,7 @@ use actix_files::{NamedFile, Files};
 
 mod routes;
 use routes::index_routes::index;
+mod lib;
 
 #[actix_web::main]
 async fn main() -> Result<()> {
@@ -17,7 +18,7 @@ async fn main() -> Result<()> {
                 .show_files_listing().use_last_modified(true)
             )
     })
-    .bind(("127.0.0.1", 3000))?
+    .bind(("127.0.0.1", lib::CONFIG.port))?
     .run()
     .await
 }
