@@ -1,3 +1,4 @@
+use actix_web::middleware;
 use actix_web::{App, HttpServer, middleware::Logger};
 use std::path::Path;
 use std::io::Result;
@@ -12,7 +13,7 @@ async fn main() -> Result<()> {
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
     HttpServer::new(|| {
         App::new()
-            .wrap(Logger::new(""))
+            .wrap(Logger::default())
             .service(index)
             .service(Files::new("/dist", Path::new(env!("CARGO_MANIFEST_DIR")).join("../dist"))
                 .show_files_listing().use_last_modified(true)
