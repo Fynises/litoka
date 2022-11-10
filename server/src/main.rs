@@ -19,6 +19,7 @@ async fn main() -> Result<()> {
             )
     })
     .bind(("127.0.0.1", lib::CONFIG.port))?
+    .workers(lib::CONFIG.workers.into())
     .run()
     .await
 }

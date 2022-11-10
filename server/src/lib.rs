@@ -3,7 +3,8 @@ use std::env;
 
 lazy_static! {
     pub static ref CONFIG: Config = {
-        let config: Config = Config { 
+        let config: Config = Config {
+            workers: get_worker_env("WORKERS"),
             port: get_env_int("PORT"), 
             ws_port: get_env_int("WS_PORT"), 
             ws_url: get_env("WS_URL"), 
@@ -19,6 +20,7 @@ lazy_static! {
 }
 
 pub struct Config {
+    pub workers: u8,
     pub port: u16,
     pub ws_port: u16,
     pub ws_url: String,
@@ -44,5 +46,15 @@ fn get_env_int(key: &str) -> u16 {
             Err(_) => return 0
         }
         Err(_) => return 0
+    }
+}
+
+fn get_worker_env(key: &str) -> u8 {
+    match env::var(key) {
+        Ok(val) => match val.parse::<u8>() {
+            Ok(n) => return n,
+            Err(_) => return 1
+        }
+        Err(_) => return 1
     }
 }
