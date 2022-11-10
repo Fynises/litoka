@@ -1,11 +1,9 @@
-use actix_web::middleware;
 use actix_web::{App, HttpServer, middleware::Logger};
 use std::path::Path;
 use std::io::Result;
 use actix_files::Files;
 
 mod routes;
-use routes::index_routes::index;
 mod lib;
 
 #[actix_web::main]
@@ -14,7 +12,8 @@ async fn main() -> Result<()> {
     HttpServer::new(|| {
         App::new()
             .wrap(Logger::default())
-            .service(index)
+            .service(routes::index_routes::index)
+            .service(routes::api_routes::get_web_socket)
             .service(Files::new("/dist", Path::new(env!("CARGO_MANIFEST_DIR")).join("../dist"))
                 .show_files_listing().use_last_modified(true)
             )
