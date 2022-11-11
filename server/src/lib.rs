@@ -1,25 +1,16 @@
 use lazy_static::lazy_static;
 use std::env;
+use std::fs;
+use serde::Deserialize;
 
 lazy_static! {
-    pub static ref CONFIG: Config = {
-        let config: Config = Config {
-            workers: get_worker_env("WORKERS"),
-            port: get_env_int("PORT"), 
-            ws_port: get_env_int("WS_PORT"), 
-            ws_url: get_env("WS_URL"), 
-            twitch_chat_url: get_env("TWITCH_CHAT_URL"), 
-            twitch_client_id: get_env("TWITCH_CLIENT_ID"), 
-            twitch_client_secret: get_env("TWITCH_CLIENT_SECRET"), 
-            twitch_access_token: get_env("TWITCH_ACCESS_TOKEN"), 
-            twitch_oauth_token: get_env("TWITCH_OAUTH"), 
-            twitch_refresh_token: get_env("TWITCH_REFRESH_TOKEN") 
-        };
-        config
-    };
+    pub static ref CONFIG: Config = load_config();
 }
 
+#[derive(Deserialize, Debug)]
 pub struct Config {
+    pub index_path: String,
+    pub dist_path: String,
     pub workers: u8,
     pub port: u16,
     pub ws_port: u16,
@@ -32,29 +23,34 @@ pub struct Config {
     pub twitch_refresh_token: String
 }
 
+impl Default for Config {
+    fn default() -> Config {
+        Config {
+            index_path: "".to_string(),
+            dist_path: "".to_string(),
+            workers: 1,
+            port: 0,
+            ws_port: 0,
+            ws_url: "".to_string(),
+            twitch_chat_url: "".to_string(),
+            twitch_client_id: "".to_string(),
+            twitch_client_secret: "".to_string(),
+            twitch_access_token: "".to_string(),
+            twitch_oauth_token: "".to_string(),
+            twitch_refresh_token: "".to_string()
+        }
+    }
+}
+
+fn load_config() -> Config {
+    let data = fs::read_to_string(get_env("CONFIG_PATH")).expect("err");
+    let config: Config = serde_json::from_str(&data).expect("Json read error");
+    return config
+}
+
 fn get_env(key: &str) -> String {
     match env::var(key) {
         Ok(val) => return val,
         Err(_) => return "".to_string()
-    }
-}
-
-fn get_env_int(key: &str) -> u16 {
-    match env::var(key) {
-        Ok(val) => match val.parse::<u16>() {
-            Ok(n) => return n,
-            Err(_) => return 0
-        }
-        Err(_) => return 0
-    }
-}
-
-fn get_worker_env(key: &str) -> u8 {
-    match env::var(key) {
-        Ok(val) => match val.parse::<u8>() {
-            Ok(n) => return n,
-            Err(_) => return 1
-        }
-        Err(_) => return 1
     }
 }
