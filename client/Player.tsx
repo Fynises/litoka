@@ -5,17 +5,6 @@ import WebSocket from 'isomorphic-ws';
 import hash from 'object-hash';
 import ReactPlayer from 'react-player';
 
-interface WebSocketURLApiReturn {
-  wsUrl: string
-}
-
-interface ClipData {
-  clip_url: string,
-  streamer: string,
-  profile_pic: string,
-  clipDuration: number,
-}
-
 const Player = () => {
 
   const searchParams: URLSearchParams = new URLSearchParams(document.location.search);
@@ -34,9 +23,9 @@ const Player = () => {
     const abortController = new AbortController();
     const signal = abortController.signal;
     fetchWsUrl(signal).then((data: WebSocketURLApiReturn) => {
-      console.log(`fetched websocket url from server: ${data.wsUrl}`);
+      console.log(`fetched websocket url from server: ${data.ws_url}`);
       try {
-        const ws = new WebSocket(data.wsUrl);
+        const ws = new WebSocket(data.ws_url);
         ws.onopen = () => {
           console.log('connecting to server websocket');
           const optionsObj = {
