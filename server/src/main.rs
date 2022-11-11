@@ -14,7 +14,7 @@ async fn main() -> Result<()> {
             .wrap(Logger::default())
             .service(routes::index_routes::index)
             .service(routes::api_routes::get_web_socket)
-            .service(Files::new("/dist", Path::new(env!("CARGO_MANIFEST_DIR")).join("../dist"))
+            .service(Files::new("/dist", lib::CONFIG.dist_path.as_str())
                 .show_files_listing().use_last_modified(true)
             )
     })
