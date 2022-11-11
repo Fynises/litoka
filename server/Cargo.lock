@@ -930,6 +930,7 @@ dependencies = [
  "env_logger",
  "lazy_static",
  "serde",
+ "serde_json",
 ]
 
 [[package]]
