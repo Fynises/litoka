@@ -1,5 +1,4 @@
 use actix_web::{App, HttpServer, middleware::Logger};
-use std::path::Path;
 use std::io::Result;
 use actix_files::Files;
 
