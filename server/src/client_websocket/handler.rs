@@ -5,17 +5,14 @@ use futures_util::{
     future::{select, Either},
     StreamExt as _,
 };
-use tokio::{pin, sync::mpsc, time::interval};
+use tokio::{pin, time::interval};
 
-use crate::client_websocket::shoutout_structs::ClientConnectMessage;
-
-use super::websocket_server::{WsServerHandle, ConnId};
+use crate::client_websocket::shoutout_structs::{ClientConnectMessage, ClipData};
 
 const HEARTBEAT_INTERVAL: Duration = Duration::from_secs(20);
 const CLIENT_TIMEOUT: Duration = Duration::from_secs(30);
 
 pub async fn client_ws(
-    ws_server: WsServerHandle,
     mut session: actix_ws::Session,
     mut msg_stream: actix_ws::MessageStream,
 ) {
@@ -25,22 +22,12 @@ pub async fn client_ws(
     let mut last_heartbeat = Instant::now();
     let mut interval = interval(HEARTBEAT_INTERVAL);
 
-    let (conn_tx, mut conn_rx) = mpsc::unbounded_channel();
-
-    let conn_id = ws_server.connect(conn_tx).await;
-
     let close_reason = loop {
         let tick = interval.tick();
         pin!(tick);
 
-        let msg_rx = conn_rx.recv();
-        pin!(msg_rx);
-
-        let messages = select(msg_stream.next(), msg_rx);
-        pin!(messages);
-
-        match select(messages, tick).await {
-            Either::Left((Either::Left((Some(Ok(msg)), _)), _)) => {
+        match select(msg_stream.next(), tick).await {
+            Either::Left((Some(Ok(msg)), _)) => {
                 println!("msg: {msg:?}");
 
                 match msg {
@@ -55,6 +42,16 @@ pub async fn client_ws(
 
                     Message::Text(text) => {
                         let client_connect_message: ClientConnectMessage = serde_json::from_str(&text).expect("json error");
+                        //debug
+                        println!("message recieved: {client_connect_message:?}");
+                        //debug return with message
+                        let test_clipdata: ClipData = ClipData { 
+                            clip_url: "test".to_string(), 
+                            streamer: "test".to_string(), 
+                            profile_pic: "test".to_string(), 
+                            clip_duration: 50 
+                        };
+                        session.text(serde_json::to_string(&test_clipdata).expect("json error")).await.unwrap();
                     },
 
                     Message::Binary(_bin) => {
@@ -69,18 +66,11 @@ pub async fn client_ws(
                 }
             }
 
-            Either::Left((Either::Left((Some(Err(err)), _)), _)) => {
+            Either::Left((Some(Err(err)), _)) => {
                 println!("{}", err);
-                break None;
             }
 
-            Either::Left((Either::Left((None, _)), _)) => break None,
-
-            Either::Left((Either::Right((Some(chat_msg), _)), _)) => todo!(),
-
-            Either::Left((Either::Right((None, _)), _)) => unreachable!(
-                "all connections were dropped; server may have panicked"
-            ),
+            Either::Left((None, _)) => break None,
 
             Either::Right((_inst, _)) => {
                 if Instant::now().duration_since(last_heartbeat) > CLIENT_TIMEOUT {
@@ -92,8 +82,6 @@ pub async fn client_ws(
             }
         };
     };
-
-    ws_server.disconnect(conn_id);
 
     let _ = session.close(close_reason).await;
 }

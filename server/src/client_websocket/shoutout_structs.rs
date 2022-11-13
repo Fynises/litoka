@@ -1,4 +1,4 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Debug)]
 pub struct ClientConnectOptions {
@@ -12,6 +12,14 @@ pub struct ClientConnectOptions {
 pub struct ClientConnectMessage {
     pub options: ClientConnectOptions,
     pub hash: String,
+}
+
+#[derive(Serialize)]
+pub struct ClipData {
+    pub clip_url: String,
+    pub streamer: String,
+    pub profile_pic: String,
+    pub clip_duration: usize
 }
 
 impl Default for ClientConnectOptions {
