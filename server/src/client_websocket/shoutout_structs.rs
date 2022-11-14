@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct ClientConnectOptions {
     pub channel: String,
     pub allow_mods: bool,
@@ -14,7 +14,7 @@ pub struct ClientConnectMessage {
     pub hash: String,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Debug)]
 pub struct ClipData {
     pub clip_url: String,
     pub streamer: String,
