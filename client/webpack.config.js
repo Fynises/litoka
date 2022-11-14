@@ -1,12 +1,11 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable indent */
 const path = require('path');
-const nodeExternals = require('webpack-node-externals');
 
 module.exports = [
     {
         name: 'client',
-        entry: './client/main.tsx',
+        entry: './src/main.tsx',
         module: {
             rules: [
                 {
@@ -22,7 +21,7 @@ module.exports = [
         output: {
             filename: '[name].js',
             path: path.resolve(__dirname, 'dist'),
-            publicPath: '/dist/'
+            publicPath: '../dist/'
         },
         optimization: {
             splitChunks: {
