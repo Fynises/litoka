@@ -991,7 +991,9 @@ dependencies = [
 name = "server"
 version = "0.1.0"
 dependencies = [
+ "actix-codec",
  "actix-files",
+ "actix-http",
  "actix-web",
  "actix-ws",
  "awc",
@@ -999,6 +1001,7 @@ dependencies = [
  "futures-util",
  "lazy_static",
  "rand",
+ "regex",
  "serde",
  "serde_json",
  "tokio",

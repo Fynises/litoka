@@ -40,6 +40,14 @@ impl Sessions {
         id
     }
 
+    pub fn get_options_map(&self, channel: String) -> Option<&HashMap<usize, ClientConnectOptions>> {
+        return self.channels.get(&channel);
+    }
+
+    pub fn has_channel(&self, channel: String) -> bool {
+        return self.channels.contains_key(&channel);
+    }
+
     fn increment_counter(&mut self) {
         self.id_counter += 1;
     }

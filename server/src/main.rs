@@ -1,14 +1,20 @@
 use actix_web::{App, HttpServer, middleware::Logger};
+use tokio::task::spawn_local;
 use std::io::Result;
 use actix_files::Files;
 
 mod routes;
 mod lib;
 mod client_websocket;
+mod twitch_websocket;
+mod irc_processor;
+mod twitch_api;
 
 #[actix_web::main]
 async fn main() -> Result<()> {
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
+
+    spawn_local(twitch_websocket::handler::init_socket());
 
     HttpServer::new(move || {
         App::new()
