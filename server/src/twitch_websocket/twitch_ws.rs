@@ -1,6 +1,7 @@
 use std::sync::{Arc, Mutex};
 use lazy_static::lazy_static;
 use tokio::sync::mpsc::{self,UnboundedSender};
+use log::info;
 
 lazy_static! {
     pub static ref CONNECTION: Arc<Mutex<TwitchConnection>> = {
@@ -27,7 +28,7 @@ impl TwitchConnection {
     }
 
     pub fn join(&self, channel_name: String) {
-        println!("recieved {}", channel_name);
+        info!("recieved join request: {}", channel_name);
         self.sender.send(format!("JOIN #{}", channel_name)).unwrap();
     }
 

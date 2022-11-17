@@ -2,6 +2,7 @@ use rand::Rng;
 use regex::Regex;
 use lazy_static::lazy_static;
 use serde::Serialize;
+use log::error;
 use crate::client_websocket::shoutout_structs::ClientConnectOptions;
 use crate::irc_processor::command_parser::TwitchMessage;
 use crate::client_websocket::session_map::SESSION;
@@ -39,14 +40,12 @@ pub async fn run_shoutout_command(msg: &TwitchMessage) {
         //validate the command
         for (key, val) in options.iter() {
             if msg.is_broadcaster || (msg.is_mod && val.allow_mods) {
-                println!("before execute");
                 execute_shoutout(target_channel.clone(), key, val).await;
-                println!("after execute");
             }
         }
 
     } else {
-        println!("cannot find channel: {}", msg.channel);
+        error!("cannot find channel: {}", msg.channel);
         return
     }
 }

@@ -4,6 +4,7 @@ use futures_util::{
     future::{select, Either},
     StreamExt as _,
 };
+use log::{info, warn, error};
 use uuid::Uuid;
 use tokio::{pin, time::interval, sync::mpsc};
 use serde_json;
@@ -17,7 +18,7 @@ pub async fn client_ws(
     mut session: actix_ws::Session,
     mut msg_stream: actix_ws::MessageStream,
 ) {
-    println!("connected");
+    info!("client connected");
 
     let (conn_tx, mut conn_rx) = mpsc::unbounded_channel();
 
@@ -55,11 +56,11 @@ pub async fn client_ws(
                     },
 
                     Message::Binary(_bin) => {
-                        println!("unexpected binary message");
+                        warn!("unexpected binary message");
                     }
 
                     Message::Close(reason) => {
-                        println!("{reason:?}");
+                        info!("session {uuid} closed with: {reason:?}");
                         SESSION.lock().unwrap().close(uuid.clone(), channel.clone());
                     },
 
@@ -71,7 +72,7 @@ pub async fn client_ws(
 
             // client websocket stream error
             Either::Left((Either::Left((Some(Err(err)), _)), _)) => {
-                println!("{}", err);
+                error!("{}", err);
                 break None;
             }
 
@@ -89,7 +90,7 @@ pub async fn client_ws(
 
             Either::Right((_inst, _)) => {
                 if Instant::now().duration_since(last_heartbeat) > CLIENT_TIMEOUT {
-                    println!("client has not sent heartbeat in over {CLIENT_TIMEOUT:?}; disconnecting");
+                    info!("client has not sent heartbeat in over {CLIENT_TIMEOUT:?}; disconnecting");
                     break None;
                 }
 

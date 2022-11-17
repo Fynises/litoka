@@ -1,5 +1,6 @@
 use lazy_static::lazy_static;
 use regex::Regex;
+use log::error;
 
 use super::commands::shoutout::run_shoutout_command;
 
@@ -31,7 +32,7 @@ pub async fn capture_message(privmsg: &str) {
     let chatter_name_cap = match CHATTER_CAPTURE.captures(&privmsg) {
         Some(capture) => capture,
         None => {
-            println!("error capturing chatter name");
+            error!("error capturing chatter name");
             return
         }
     };
@@ -44,7 +45,7 @@ pub async fn capture_message(privmsg: &str) {
     let chatter_id_cap = match CHATTERID_CAPTURE.captures(&privmsg) {
         Some(capture) => capture,
         None => {
-            println!("error capturing chatter id");
+            error!("error capturing chatter id");
             return
         }
     };
@@ -56,7 +57,7 @@ pub async fn capture_message(privmsg: &str) {
     let channel_cap = match CHANNEL_CAPTURE.captures(&privmsg) {
         Some(capture) => capture,
         None => {
-            println!("error capturing channel name");
+            error!("error capturing channel name");
             return
         }
     };
@@ -74,7 +75,7 @@ pub async fn capture_message(privmsg: &str) {
     let message_cap = match PRIVMSG_CAPTURE_REGEX.captures(&privmsg) {
         Some(capture) => capture,
         None => {
-            println!("error capturing message");
+            error!("error capturing message");
             return
         }
     };
@@ -96,8 +97,6 @@ pub async fn capture_message(privmsg: &str) {
         is_subscriber, 
         message 
     };
-
-    println!("{twitch_message:?}");
 
     parse_command(twitch_message).await;
 
