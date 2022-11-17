@@ -63,22 +63,34 @@ pub struct ApiSingleUser {
     pub created_at: String,
 }
 
-pub async fn get_target_streamer_id(name: String) -> ApiGetUser {
+pub async fn get_target_streamer_id(name: String) -> Option<ApiGetUser> {
     let client = Client::default();
     let req = client.get("https://api.twitch.tv/helix/users")
         .query(&StreamerIdQuery {login: name.into()})
         .unwrap()
         .insert_header(("Authorization", format!("Bearer {}", CONFIG.twitch_oauth_token)))
         .insert_header(("Client-Id", CONFIG.twitch_client_id.as_bytes()));
-    req.send().await.unwrap().json::<ApiGetUser>().await.expect("json payload error")
+    match req.send().await {
+        Ok(mut res) => match res.json::<ApiGetUser>().await {
+            Ok(json) => return Some(json),
+            Err(_) => return None,
+        },
+        Err(_) => return None,
+    }
 }
 
-pub async fn fetch_clips(broadcaster_id: String) -> ApiGetClips {
+pub async fn fetch_clips(broadcaster_id: String) -> Option<ApiGetClips> {
     let client = Client::default();
     let req = client.get("https://api.twitch.tv/helix/clips")
         .query(&ClipsQuery {broadcaster_id, first: 100})
         .unwrap()
         .insert_header(("Authorization", format!("Bearer {}", CONFIG.twitch_oauth_token)))
         .insert_header(("Client-Id", CONFIG.twitch_client_id.as_bytes()));
-    req.send().await.unwrap().json::<ApiGetClips>().await.expect("json payload error")
+    match req.send().await {
+        Ok(mut res) => match res.json::<ApiGetClips>().await {
+            Ok(json) => return Some(json),
+            Err(_) => return None,
+        },
+        Err(_) => return None,
+    }
 }

@@ -52,8 +52,30 @@ pub async fn run_shoutout_command(msg: &TwitchMessage) {
 
 //filtering will not be implemented for now
 async fn execute_shoutout(target_channel: String ,client_uuid: &String, _options: &ClientConnectOptions) {
-    let streamer = get_target_streamer_id(target_channel).await.data.pop().expect("error fetching streamer id");
-    let clips = fetch_clips(streamer.id).await.data;
+
+
+    let streamer = match get_target_streamer_id(target_channel.clone()).await {
+        Some(mut res) => match res.data.len() {
+            1 => res.data.pop().unwrap(),
+            _ => {
+                error!("zero or too many users found for username: {}", target_channel);
+                return
+            }
+        },
+        None => return
+    };
+
+
+    let clips =  match fetch_clips(streamer.id).await {
+        Some(res) => match res.data.len() {
+            0 => {
+                error!("zero clips were found for {}", target_channel);
+                return;
+            },
+            _ => res.data
+        },
+        None => return
+    };
     let rng = rand::thread_rng().gen_range(0..clips.len());
     let clip = clips.get(rng).expect("error extracting clip from map");
     let clip_url = format_clip_url(clip.thumbnail_url.clone()).expect("error formatting clip url");
