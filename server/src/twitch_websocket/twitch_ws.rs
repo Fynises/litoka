@@ -22,10 +22,6 @@ impl TwitchConnection {
         self.sender = sender;
     }
 
-    pub fn send_message(&self, message: String) {
-        self.sender.send(message).unwrap();
-    }
-
     pub fn send_pong(&self) {
         self.sender.send("PONG :tmi.twitch.tv".to_string()).unwrap();
     }

@@ -1,9 +1,10 @@
-use std::time::{Duration, Instant};
+use std::{time::{Duration, Instant}};
 use actix_ws::Message;
 use futures_util::{
     future::{select, Either},
     StreamExt as _,
 };
+use uuid::Uuid;
 use tokio::{pin, time::interval, sync::mpsc};
 use serde_json;
 use crate::client_websocket::shoutout_structs::ClientConnectMessage;
@@ -20,7 +21,7 @@ pub async fn client_ws(
 
     let (conn_tx, mut conn_rx) = mpsc::unbounded_channel();
 
-    let mut id: usize = 0;
+    let uuid: String = Uuid::new_v4().to_string();
     let mut channel: String = String::new();
     let mut last_heartbeat = Instant::now();
     let mut interval = interval(HEARTBEAT_INTERVAL);
@@ -36,7 +37,6 @@ pub async fn client_ws(
 
         match select(messages, tick).await {
             Either::Left((Either::Left((Some(Ok(msg)), _)), _)) => {
-                println!("msg: {msg:?}");
 
                 match msg {
                     Message::Ping(bytes) => {
@@ -51,7 +51,7 @@ pub async fn client_ws(
                     Message::Text(text) => {
                         let client_connect_message: ClientConnectMessage = serde_json::from_str(&text).expect("json error");
                         channel = client_connect_message.options.channel.clone();
-                        id = SESSION.lock().unwrap().add(conn_tx.clone(), client_connect_message.options);
+                        SESSION.lock().unwrap().add(conn_tx.clone(), client_connect_message.options, uuid.clone());
                     },
 
                     Message::Binary(_bin) => {
@@ -60,7 +60,7 @@ pub async fn client_ws(
 
                     Message::Close(reason) => {
                         println!("{reason:?}");
-                        SESSION.lock().unwrap().close(id, channel.clone());
+                        SESSION.lock().unwrap().close(uuid.clone(), channel.clone());
                     },
 
                     _ => {

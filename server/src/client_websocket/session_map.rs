@@ -5,6 +5,8 @@ use std::{
 use lazy_static::lazy_static;
 use tokio::sync::mpsc::UnboundedSender;
 
+use crate::irc_processor::commands::shoutout::ClipData;
+use crate::twitch_websocket::twitch_ws::CONNECTION;
 use super::shoutout_structs::ClientConnectOptions;
 
 lazy_static! {
@@ -12,35 +14,31 @@ lazy_static! {
         let sessions: Sessions = Sessions { 
             sessions: HashMap::new(), 
             channels: HashMap::new(),
-            id_counter: 0,
         };
         Arc::new(Mutex::new(sessions))
     };
 }
 
 pub struct Sessions {
-    pub sessions: HashMap<usize, UnboundedSender<String>>,
-    pub channels: HashMap<String, HashMap<usize, ClientConnectOptions>>,
-    id_counter: usize,
+    pub sessions: HashMap<String, UnboundedSender<String>>,
+    pub channels: HashMap<String, HashMap<String, ClientConnectOptions>>,
 }
 
 impl Sessions {
-    pub fn add(&mut self, session: UnboundedSender<String>, options: ClientConnectOptions) -> usize {
+    pub fn add(&mut self, session: UnboundedSender<String>, options: ClientConnectOptions, uuid: String) {
         let channel_name: String = options.channel.clone();
-        let id: usize = self.id_counter;
-        self.increment_counter();
 
         if self.channels.contains_key(&channel_name) {            
-            self.channels.get_mut(&channel_name).expect("err").insert(id, options);
+            self.channels.get_mut(&channel_name).expect("err").insert(uuid.clone(), options);
         } else {
-            self.channels.insert(channel_name, HashMap::from([(id, options)]));
+            self.channels.insert(channel_name.clone(), HashMap::from([(uuid.clone(), options)]));
         }
-        self.sessions.insert(id, session);
-        
-        id
+        self.sessions.insert(uuid.clone(), session);
+
+        CONNECTION.lock().unwrap().join(channel_name);
     }
 
-    pub fn get_options_map(&self, channel: String) -> Option<&HashMap<usize, ClientConnectOptions>> {
+    pub fn get_options_map(&self, channel: String) -> Option<&HashMap<String, ClientConnectOptions>> {
         return self.channels.get(&channel);
     }
 
@@ -48,13 +46,14 @@ impl Sessions {
         return self.channels.contains_key(&channel);
     }
 
-    fn increment_counter(&mut self) {
-        self.id_counter += 1;
+    pub fn send_clip(&self, clip_data: ClipData, client_uuid: String) {
+        let tx = self.sessions.get(&client_uuid).expect("error in retrieving unbounded sender");
+        tx.send(serde_json::to_string(&clip_data).expect("error serialising clip data")).expect("error sending to client");
     }
 
-    pub fn close(&mut self, id: usize, channel: String) {
-        self.sessions.remove(&id).unwrap();
-        self.channels.get(&channel).unwrap().to_owned().remove(&id);
+    pub fn close(&mut self, uuid: String, channel: String) {
+        self.sessions.remove(&uuid).unwrap();
+        self.channels.get(&channel).unwrap().to_owned().remove(&uuid);
     }
 
 }

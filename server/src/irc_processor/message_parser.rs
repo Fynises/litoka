@@ -8,7 +8,7 @@ lazy_static! {
     static ref PRIVMSG_CAPTURE_REGEX: Regex = Regex::new(r"user-type= [^\s]+.tmi\.twitch\.tv PRIVMSG #[^\s]+ :(.*)").unwrap();
 }
 
-pub fn parse_message(msg: &str) {
+pub async fn parse_message(msg: &str) {
     if msg == "PING :tmi.twitch.tv\r\n" {
         CONNECTION.lock().unwrap().send_pong();
         return
@@ -16,6 +16,6 @@ pub fn parse_message(msg: &str) {
 
     //if message is a valid PRIVMSG then send to command parser
     if PRIVMSG_REGEX.is_match(&msg) {
-        command_parser::capture_message(msg);
+        command_parser::capture_message(msg).await;
     }
 }

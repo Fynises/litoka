@@ -25,10 +25,12 @@ pub async fn init_socket() {
             tokio::select! {
                 res = connection.next() => {
                     match res {
-                        None => return,
+                        None => (),
                         Some(body) => {
                             match body.expect("error in recieving message from twitch irc") {
-                                Frame::Text(text) => parse_message(std::str::from_utf8(&text).unwrap()),
+                                Frame::Text(text) => {
+                                    parse_message(std::str::from_utf8(&text).unwrap()).await;
+                                }
                                 Frame::Binary(_) => todo!(),
                                 Frame::Continuation(_) => todo!(),
                                 Frame::Ping(_) => todo!(),
@@ -40,7 +42,7 @@ pub async fn init_socket() {
                 }
                 res = twitch_rx.recv() => {
                     match res {
-                        None => return,
+                        None => (),
                         Some(body) => {
                             connection.send(Message::Text(body.into())).await.unwrap()
                         }

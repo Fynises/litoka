@@ -14,7 +14,7 @@ lazy_static! {
     static ref COMMAND_CAPTURE_REGEX: Regex = Regex::new(r"!(\w+)").unwrap();
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct TwitchMessage {
     pub chatter_name: String,
     pub chatter_id: String,
@@ -25,25 +25,43 @@ pub struct TwitchMessage {
     pub message: String
 }
 
-pub fn capture_message(privmsg: &str) {
+pub async fn capture_message(privmsg: &str) {
 
     //chatter name
-    let chatter_name_cap = CHATTER_CAPTURE.captures(&privmsg).expect("error capturing chatter name");
+    let chatter_name_cap = match CHATTER_CAPTURE.captures(&privmsg) {
+        Some(capture) => capture,
+        None => {
+            println!("error capturing chatter name");
+            return
+        }
+    };
     let chatter_name: String = match chatter_name_cap.len() {
-        1 => chatter_name_cap[1].to_string(),
+        2 => chatter_name_cap[1].to_string(),
         _ => return
     };
 
     //chatter id
-    let chatter_id_cap = CHATTERID_CAPTURE.captures(&privmsg).expect("error capturing chatter id");
+    let chatter_id_cap = match CHATTERID_CAPTURE.captures(&privmsg) {
+        Some(capture) => capture,
+        None => {
+            println!("error capturing chatter id");
+            return
+        }
+    };
     let chatter_id: String = match chatter_id_cap.len() {
-        1 => chatter_id_cap[1].to_string(),
+        2 => chatter_id_cap[1].to_string(),
         _ => return
     };
 
-    let channel_cap = CHANNEL_CAPTURE.captures(&privmsg).expect("error capturing channel name");
+    let channel_cap = match CHANNEL_CAPTURE.captures(&privmsg) {
+        Some(capture) => capture,
+        None => {
+            println!("error capturing channel name");
+            return
+        }
+    };
     let channel: String = match channel_cap.len() {
-        1 => channel_cap[1].to_string(),
+        2 => channel_cap[1].to_string(),
         _ => return
     };
 
@@ -53,9 +71,19 @@ pub fn capture_message(privmsg: &str) {
 
     let is_subscriber = ISSUBSCRIBER_CAPTURE.is_match(&privmsg);
 
-    let message_cap = PRIVMSG_CAPTURE_REGEX.captures(&privmsg).expect("error capturing message");
+    let message_cap = match PRIVMSG_CAPTURE_REGEX.captures(&privmsg) {
+        Some(capture) => capture,
+        None => {
+            println!("error capturing message");
+            return
+        }
+    };
     let message: String = match message_cap.len() {
-        1 => message_cap[1].to_string(),
+        2 => {
+            let mut msg = message_cap[1].to_string();
+            msg.pop(); // a very annoying way to remove the \r at the end of message
+            msg
+        },
         _ => return
     };
 
@@ -69,21 +97,28 @@ pub fn capture_message(privmsg: &str) {
         message 
     };
 
-    parse_command(twitch_message);
+    println!("{twitch_message:?}");
+
+    parse_command(twitch_message).await;
 
 }
 
 //command parsing will be hardcoded for now, will plan on adding dynamic prefixes
-fn parse_command(message: TwitchMessage) {
-    let command = COMMAND_CAPTURE_REGEX.captures(&message.message).expect("regex capture error");
+async fn parse_command(message: TwitchMessage) {
+    let command = match COMMAND_CAPTURE_REGEX.captures(&message.message) {
+        Some(capture) => capture,
+        None => {
+            return
+        }
+    };
     match command.len() {
-        1 => {
+        2 => {
             match &command[1] {
-                "so" => run_shoutout_command(&message),
-                _ => ()
+                "so" => run_shoutout_command(&message).await,
+                _ => return
             }
         },
-        _ => ()
+        _ => return
     }
 }
 
