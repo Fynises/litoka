@@ -1,0 +1,11 @@
+use actix_web::routes;
+use actix_files::NamedFile;
+use std::io::Result;
+use crate::lib;
+
+#[routes]
+#[get("/")]
+#[get("/shoutout")]
+pub async fn index() -> Result<NamedFile> {
+    Ok(NamedFile::open(lib::CONFIG.index_path.as_str()).unwrap())
+}

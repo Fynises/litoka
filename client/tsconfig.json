@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "outDir": "./dist/",
+        "outDir": "../dist/",
         "module": "es2020",
         "moduleResolution": "node",
         "noImplicitAny": true,
