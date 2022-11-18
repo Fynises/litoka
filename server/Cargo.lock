@@ -1054,6 +1054,7 @@ dependencies = [
  "actix-web",
  "actix-ws",
  "awc",
+ "bytes",
  "env_logger",
  "futures-util",
  "lazy_static",

@@ -2,7 +2,7 @@ use rand::Rng;
 use regex::Regex;
 use lazy_static::lazy_static;
 use serde::Serialize;
-use log::error;
+use log::{info, error};
 use crate::client_websocket::shoutout_structs::ClientConnectOptions;
 use crate::irc_processor::command_parser::TwitchMessage;
 use crate::client_websocket::session_map::SESSION;
@@ -76,6 +76,9 @@ async fn execute_shoutout(target_channel: String ,client_uuid: &String, _options
         },
         None => return
     };
+
+    info!("fetched {} clips for channel: {}", clips.len(), streamer.display_name);
+
     let rng = rand::thread_rng().gen_range(0..clips.len());
     let clip = clips.get(rng).expect("error extracting clip from map");
     let clip_url = format_clip_url(clip.thumbnail_url.clone()).expect("error formatting clip url");
