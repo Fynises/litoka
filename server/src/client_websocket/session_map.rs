@@ -4,7 +4,7 @@ use std::{
 };
 use lazy_static::lazy_static;
 use tokio::sync::mpsc::UnboundedSender;
-
+use log::{info, error};
 use crate::irc_processor::commands::shoutout::ClipData;
 use crate::twitch_websocket::twitch_ws::CONNECTION;
 use super::shoutout_structs::ClientConnectOptions;
@@ -47,13 +47,26 @@ impl Sessions {
     }
 
     pub fn send_clip(&self, clip_data: ClipData, client_uuid: String) {
-        let tx = self.sessions.get(&client_uuid).expect("error in retrieving unbounded sender");
+        let tx = match self.sessions.get(&client_uuid) {
+            Some(sender) => sender,
+            None => {
+                error!("error retrieving sender from [{}]", client_uuid);
+                return
+            }
+        };
         tx.send(serde_json::to_string(&clip_data).expect("error serialising clip data")).expect("error sending to client");
     }
 
-    pub fn close(&mut self, uuid: String, channel: String) {
-        self.sessions.remove(&uuid).unwrap();
-        self.channels.get(&channel).unwrap().to_owned().remove(&uuid);
+    pub async fn close(&mut self, uuid: String, channel: String) {
+        info!("removing session {} from channel {}" , uuid, channel);
+        match self.sessions.remove_entry(&uuid) {
+            Some(item) => info!("successfully removed [{}] from session map", item.0),
+            None => error!("entry does not exist from session map"),
+        };
+        match self.channels.get_mut(&channel).unwrap().remove_entry(&uuid) {
+            Some(item) => info!("successfully removed [{}] from channel map", item.0),
+            None => error!("entry does not exist from channel map"),
+        };
     }
 
 }

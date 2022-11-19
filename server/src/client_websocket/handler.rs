@@ -59,11 +59,8 @@ pub async fn client_ws(
                         warn!("unexpected binary message");
                     }
 
-                    Message::Close(reason) => {
-                        info!("session {uuid} closed with: {reason:?}");
-                        SESSION.lock().unwrap().close(uuid.clone(), channel.clone());
-                    },
-
+                    Message::Close(reason) => break reason,
+                        
                     _ => {
                         break None;
                     }
@@ -99,5 +96,7 @@ pub async fn client_ws(
         };
     };
 
+    info!("session {uuid} closed with: {close_reason:?}");
+    SESSION.lock().unwrap().close(uuid.clone(), channel.clone()).await;
     let _ = session.close(close_reason).await;
 }

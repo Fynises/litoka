@@ -26,6 +26,8 @@ pub async fn run_shoutout_command(msg: &TwitchMessage) {
     if session_map.has_channel(msg.channel.clone()) {
         let options = session_map.get_options_map(msg.channel.clone()).expect("unable to get map").to_owned();
         
+        info!("client {} has {} connected sessions", msg.channel, options.keys().len());
+
         std::mem::drop(session_map); //TODO: try and find a way to unlock the mutex without manually dropping
 
         let target_channel_cap = TARGET_CHANNEL_CAPTURE.captures(&msg.message);
