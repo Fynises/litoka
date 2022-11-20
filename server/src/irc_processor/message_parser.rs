@@ -4,8 +4,7 @@ use regex::Regex;
 use super::command_parser;
 
 lazy_static! {
-    pub static ref PRIVMSG_REGEX: Regex = Regex::new(r"user-type= [^\s]+.tmi\.twitch\.tv PRIVMSG #[^\s]+ :").unwrap();
-    static ref PRIVMSG_CAPTURE_REGEX: Regex = Regex::new(r"user-type= [^\s]+.tmi\.twitch\.tv PRIVMSG #[^\s]+ :(.*)").unwrap();
+    pub static ref PRIVMSG_REGEX: Regex = Regex::new(r"[^\s]+.tmi\.twitch\.tv PRIVMSG #[^\s]+ :").unwrap();
 }
 
 pub async fn parse_message(msg: &str) {

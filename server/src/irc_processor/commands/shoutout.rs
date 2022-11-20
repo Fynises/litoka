@@ -41,6 +41,7 @@ pub async fn run_shoutout_command(msg: &TwitchMessage) {
 
         //validate the command
         for (key, val) in options.iter() {
+            info!("allow mods? : {}", val.allow_mods); // debug
             if msg.is_broadcaster || (msg.is_mod && val.allow_mods) {
                 execute_shoutout(target_channel.clone(), key, val).await;
             }
