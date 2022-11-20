@@ -63,10 +63,18 @@ impl Sessions {
             Some(item) => info!("successfully removed [{}] from session map", item.0),
             None => error!("entry does not exist from session map"),
         };
-        match self.channels.get_mut(&channel).unwrap().remove_entry(&uuid) {
+
+        let channels_map = self.channels.get_mut(&channel).unwrap();
+
+        match channels_map.remove_entry(&uuid) {
             Some(item) => info!("successfully removed [{}] from channel map", item.0),
             None => error!("entry does not exist from channel map"),
         };
+        
+        if channels_map.is_empty() {
+            info!("session map for channel {} is empty, deleing", channel);
+            self.channels.remove_entry(&channel);
+        }
     }
 
 }
