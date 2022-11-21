@@ -5,7 +5,8 @@ use crate::lib;
 
 #[routes]
 #[get("/")]
-#[get("/shoutout")]
+#[get("/tools")]
+#[get("/tools/{_a}")]
 pub async fn index() -> Result<NamedFile> {
     Ok(NamedFile::open(lib::CONFIG.index_path.as_str()).unwrap())
 }

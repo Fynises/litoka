@@ -1,4 +1,4 @@
-import { WebSocketURLApiReturn } from './types/api-types';
+import { WebSocketURLApiReturn } from '../../../types/api-types';
 
 const fetchWsUrl = async (signal: AbortSignal) => {
   try {
