@@ -15,6 +15,7 @@ pub struct Config {
     pub port: u16,
     pub ws_port: u16,
     pub ws_url: String,
+    pub client_only: bool, // disables connection to twitch IRC to test client only
     pub twitch_chat_url: String,
     pub twitch_client_id: String,
     pub twitch_client_secret: String,
@@ -32,6 +33,7 @@ impl Default for Config {
             port: 0,
             ws_port: 0,
             ws_url: "".to_string(),
+            client_only: false,
             twitch_chat_url: "".to_string(),
             twitch_client_id: "".to_string(),
             twitch_client_secret: "".to_string(),

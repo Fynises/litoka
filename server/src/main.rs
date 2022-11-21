@@ -14,7 +14,9 @@ mod twitch_api;
 async fn main() -> Result<()> {
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
 
-    spawn_local(twitch_websocket::handler::init_socket());
+    if !lib::CONFIG.client_only {
+        spawn_local(twitch_websocket::handler::init_socket());
+    }
 
     HttpServer::new(move || {
         App::new()
