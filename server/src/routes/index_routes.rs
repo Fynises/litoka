@@ -5,6 +5,7 @@ use crate::lib;
 
 #[routes]
 #[get("/")]
+#[get("/config/{_a}")]
 #[get("/tools")]
 #[get("/tools/{_a}")]
 pub async fn index() -> Result<NamedFile> {
