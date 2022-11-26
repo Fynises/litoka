@@ -18,6 +18,7 @@ import {
   Typography
 } from '@mui/material';
 import { ContentCopyOutlined } from '@mui/icons-material';
+import ShoutoutInfo from './ShoutoutInfo';
 
 interface URLParameters {
   base_url: string,
@@ -43,7 +44,7 @@ const ShoutoutConfig = () => {
     allow_subs: false,
     disable_overrides: false,
     filter_type: '',
-    filter_params: ''
+    filter_params: '1'
   } as URLParameters);
 
   const [snackBar, setSnackBar] = useState<boolean>(false);
@@ -171,7 +172,7 @@ const ShoutoutConfig = () => {
               }
             />
             <FormControlLabel
-              label='Disable overrides'
+              label='Disable Overrides'
               control={
                 <Checkbox
                   checked={urlParams.disable_overrides}
@@ -191,30 +192,33 @@ const ShoutoutConfig = () => {
           </FormControl>
           {
             urlParams.enable_filtering &&
-            <Box sx={{ paddingLeft: 4, paddingBottom: 1 }}>
-              <FormControl>
-                <RadioGroup
-                  defaultValue='topViewed'
-                  defaultChecked={true}
-                  value={filterValue}
-                  onChange={handleRadioChange}
-                >
-                  <FormControlLabel value='topViewed' control={<Radio />} label='Top Viewed' />
-                  <FormControlLabel value='number' control={<Radio />} label='Number' />
-                  <FormControlLabel value='time' control={<Radio />} label='Time' />
-                </RadioGroup>
-                <TextField
-                  required
-                  type='number'
-                  id='outlined-basic'
-                  variant='outlined'
-                  InputProps={{ inputProps: { min: 1 } }}
-                  label={filterPrompt}
-                  value={urlParams.filter_params}
-                  error={urlParamHasError()}
-                  onChange={e => setUrlParams({ ...urlParams, filter_params: e.target.value })}
-                />
-              </FormControl>
+            <Box sx={{ paddingLeft: 2, paddingBottom: 1 }}>
+              <Card variant='outlined' sx={{ paddingLeft: 2, paddingBottom: 1 }}>
+                <FormControl>
+                  <RadioGroup
+                    defaultValue='topViewed'
+                    defaultChecked={true}
+                    value={filterValue}
+                    onChange={handleRadioChange}
+                  >
+                    <FormControlLabel value='topViewed' control={<Radio />} label='Top Viewed' />
+                    <FormControlLabel value='number' control={<Radio />} label='Number Recent' />
+                    <FormControlLabel value='time' control={<Radio />} label='Time' />
+                  </RadioGroup>
+                  <TextField
+                    sx={{ marginTop: 1 }}
+                    required
+                    type='number'
+                    id='outlined-basic'
+                    variant='outlined'
+                    InputProps={{ inputProps: { min: 1 } }}
+                    label={filterPrompt}
+                    value={urlParams.filter_params}
+                    error={urlParamHasError()}
+                    onChange={e => setUrlParams({ ...urlParams, filter_params: e.target.value })}
+                  />
+                </FormControl>
+              </Card>
             </Box>
           }
           <Divider />
@@ -235,6 +239,7 @@ const ShoutoutConfig = () => {
           </Card>
         </Box>
       </Paper>
+      <ShoutoutInfo />
     </Box>
   );
 };
