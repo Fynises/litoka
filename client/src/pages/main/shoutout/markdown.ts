@@ -5,6 +5,8 @@ const markdown = `
 ---
 After configuring the Shoutout options, copy the link and insert into an OBS browser source.  
 browser source dimensions: \`800x600\`
+
+---
 ### Usage
 ---
 Litoka shoutout player is active as long as the browser source is active.  
@@ -14,6 +16,8 @@ The command also supports using chat mentions which allows including an \`@\` sy
 **Example:** \`!so @litokabot\`
   
 The shoutout player will automatically queue clips if the command was sent in quick succession.
+
+---
 ### Understanding filter types
 ---
 Litoka shoutout player supports filtering of clips to be played.  
@@ -30,7 +34,7 @@ Pick randomly from a set of clips that fit within the date range specified,
 the parameter is the number of days since today.  
 For example, setting the parameter to \`90\` will pick clips that were created between now and 90 days in the past.
 
-
+---
 ### Understanding Overrides
 ---
 Litoka shoutout player supports inline overrides when executing the shoutout command.  

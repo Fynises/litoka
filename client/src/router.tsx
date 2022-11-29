@@ -3,11 +3,11 @@ import { createBrowserRouter } from 'react-router-dom';
 import { ThemeProvider } from '@mui/system';
 import { CssBaseline } from '@mui/material';
 import { createTheme } from '@mui/material/styles';
-import Home from './pages/main/Home';
+import Home from './pages/main/home/Home';
 import Menu from './core/Menu';
 import Todo from './pages/misc/Todo';
 import Shoutout from './pages/tools/shoutout/Shoutout';
-import ShoutoutConfig from './pages/main/ShoutoutConfig';
+import ShoutoutConfig from './pages/main/shoutout/ShoutoutConfig';
 
 const makeTheme = createTheme({
   palette: {
