@@ -1,8 +1,14 @@
-use crate::db::db_client::DB_CLIENT;
-use crate::db::model::user::JsonUserData;
-use crate::db::model::user::User;
-use crate::db::model::user::UserData;
-use crate::twitch_api::twitch_api_controller;
+use crate::{
+    db::{
+        db_client::DB_CLIENT,
+        model::user::{
+            JsonUserData,
+            User,
+            UserData,
+        }
+    },
+    twitch_api::api_users::api_fetch_user
+};
 use lazy_static::lazy_static;
 use log::{error, info, warn};
 use mongodb::{
@@ -30,7 +36,7 @@ pub async fn get_user(username: String) -> Option<UserData> {
 }
 
 pub async fn add_and_get_user(username: String) -> Option<UserData> {
-    match twitch_api_controller::get_user_object(username.clone()).await {
+    match api_fetch_user(username.clone()).await {
         Some(object) => {
             match object.data.len() {
                 1 => {

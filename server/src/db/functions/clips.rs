@@ -4,7 +4,7 @@ use crate::{
         db_client::DB_CLIENT, 
         model::clip::{Clip, JsonClipData}
     }, 
-    twitch_api::twitch_api_controller::{api_fetch_clips},
+    twitch_api::api_clips::api_fetch_clips, 
 };
 use chrono::{Duration, Utc};
 use futures::stream::TryStreamExt;

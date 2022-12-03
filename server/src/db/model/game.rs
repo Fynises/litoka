@@ -1,6 +1,9 @@
+use serde::{Deserialize, Serialize};
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Game {
-    id: String,
-    name: String,
-    box_art_url: String,
-    igdb_id: String
+    pub id: String,
+    pub name: String,
+    pub box_art_url: String,
+    pub igdb_id: String
 }
