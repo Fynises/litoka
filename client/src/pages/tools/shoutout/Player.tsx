@@ -89,6 +89,15 @@ const Player = () => {
               alt='profile_pic'
             />
           </div>
+          <div
+            style={{
+              fontFamily: 'sans-serif',
+              color: 'white',
+              marginTop: -2
+            }}
+          >
+            {`playing: ${clips[0].game}`}
+          </div>
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <ReactPlayer
               width='800px'
@@ -99,6 +108,15 @@ const Player = () => {
               muted={false}
               onEnded={() => shiftNext(clips[0].clip_url)}
             />
+          </div>
+          <div
+            style={{
+              fontFamily: 'sans-serif',
+              color: 'white',
+              marginBottom: -2
+            }}
+          >
+            {`clipper: ${clips[0].clipper}`}
           </div>
         </span>)
       }
