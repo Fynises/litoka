@@ -13,6 +13,7 @@ pub struct Config {
     pub dist_path: String,
     pub workers: u8,
     pub port: u16,
+    pub mongodb_uri: String,
     pub ws_port: u16,
     pub ws_url: String,
     pub client_only: bool, // disables connection to twitch IRC to test client only
@@ -31,6 +32,7 @@ impl Default for Config {
             dist_path: "".to_string(),
             workers: 1,
             port: 0,
+            mongodb_uri: "".to_string(),
             ws_port: 0,
             ws_url: "".to_string(),
             client_only: false,

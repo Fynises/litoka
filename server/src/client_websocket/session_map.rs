@@ -5,7 +5,7 @@ use std::{
 use lazy_static::lazy_static;
 use tokio::sync::mpsc::UnboundedSender;
 use log::{info, error};
-use crate::irc_processor::commands::shoutout::ClipData;
+use crate::irc_processor::commands::shoutout::SoClipData;
 use crate::twitch_websocket::twitch_ws::CONNECTION;
 use super::shoutout_structs::ClientConnectOptions;
 
@@ -46,7 +46,7 @@ impl Sessions {
         return self.channels.contains_key(&channel);
     }
 
-    pub fn send_clip(&self, clip_data: ClipData, client_uuid: String) {
+    pub fn send_clip(&self, clip_data: SoClipData, client_uuid: String) {
         let tx = match self.sessions.get(&client_uuid) {
             Some(sender) => sender,
             None => {

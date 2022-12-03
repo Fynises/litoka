@@ -1,12 +1,12 @@
-use rand::Rng;
 use regex::Regex;
 use lazy_static::lazy_static;
 use serde::Serialize;
 use log::{info, error};
 use crate::client_websocket::shoutout_structs::ClientConnectOptions;
+use crate::db::functions::clips::{get_clip};
 use crate::irc_processor::command_parser::TwitchMessage;
 use crate::client_websocket::session_map::SESSION;
-use crate::twitch_api::twitch_api_controller::{get_target_streamer_id, fetch_clips};
+use crate::db::functions::users;
 
 lazy_static! {
     static ref TARGET_CHANNEL_CAPTURE: Regex = Regex::new(r"!so\s@?(\w+)").unwrap();
@@ -14,7 +14,7 @@ lazy_static! {
 }
 
 #[derive(Serialize)]
-pub struct ClipData {
+pub struct SoClipData {
     pub clip_url: String,
     pub streamer: String,
     pub profile_pic: String,
@@ -56,40 +56,22 @@ pub async fn run_shoutout_command(msg: &TwitchMessage) {
 //filtering will not be implemented for now
 async fn execute_shoutout(target_channel: String ,client_uuid: &String, _options: &ClientConnectOptions) {
 
-
-    let streamer = match get_target_streamer_id(target_channel.clone()).await {
-        Some(mut res) => match res.data.len() {
-            1 => res.data.pop().unwrap(),
-            _ => {
-                error!("zero or too many users found for username: {}", target_channel);
-                return
-            }
-        },
+    let streamer = match users::get_user(target_channel.clone()).await {
+        Some(res) => res,
         None => return
     };
 
-
-    let clips =  match fetch_clips(streamer.id).await {
-        Some(res) => match res.data.len() {
-            0 => {
-                error!("zero clips were found for {}", target_channel);
-                return;
-            },
-            _ => res.data
-        },
+    let clip =  match get_clip(streamer.id, _options.to_owned()).await {
+        Some(res) => res,
         None => return
     };
 
-    info!("fetched {} clips for channel: {}", clips.len(), streamer.display_name);
+    let clip_url = format_clip_url(clip.data.thumbnail_url.clone()).expect("error formatting clip url");
+    let clip_duration = clip.data.duration;
 
-    let rng = rand::thread_rng().gen_range(0..clips.len());
-    let clip = clips.get(rng).expect("error extracting clip from map");
-    let clip_url = format_clip_url(clip.thumbnail_url.clone()).expect("error formatting clip url");
-    let clip_duration = clip.duration;
-
-    let clip_data: ClipData = ClipData { 
+    let clip_data: SoClipData = SoClipData { 
         clip_url, 
-        streamer: streamer.display_name, 
+        streamer: streamer.login, 
         profile_pic: streamer.profile_image_url, 
         duration: clip_duration 
     };
