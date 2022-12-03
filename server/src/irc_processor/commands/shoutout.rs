@@ -1,24 +1,24 @@
 use regex::Regex;
 use lazy_static::lazy_static;
-use serde::Serialize;
-use log::{info, error};
-use crate::client_websocket::shoutout_structs::ClientConnectOptions;
-use crate::db::functions::clips::{get_clip};
-use crate::irc_processor::command_parser::TwitchMessage;
-use crate::client_websocket::session_map::SESSION;
-use crate::db::functions::users;
+use log::{info, error, warn};
+use crate::{
+    db::functions::{
+        clips::get_clip,
+        games::get_game_from_db,
+        users,
+    },
+    irc_processor::command_parser::TwitchMessage,
+    client_websocket::{
+        shoutout_structs::{ClientConnectOptions, SoClipData},
+        session_map::SESSION,
+    },
+};
+
+
 
 lazy_static! {
     static ref TARGET_CHANNEL_CAPTURE: Regex = Regex::new(r"!so\s@?(\w+)").unwrap();
     static ref URL_CAPTURE: Regex = Regex::new(r"(.*)-preview-").unwrap();
-}
-
-#[derive(Serialize)]
-pub struct SoClipData {
-    pub clip_url: String,
-    pub streamer: String,
-    pub profile_pic: String,
-    pub duration: f64,
 }
 
 pub async fn run_shoutout_command(msg: &TwitchMessage) {
@@ -53,7 +53,6 @@ pub async fn run_shoutout_command(msg: &TwitchMessage) {
     }
 }
 
-//filtering will not be implemented for now
 async fn execute_shoutout(target_channel: String ,client_uuid: &String, _options: &ClientConnectOptions) {
 
     let streamer = match users::get_user(target_channel.clone()).await {
@@ -61,19 +60,29 @@ async fn execute_shoutout(target_channel: String ,client_uuid: &String, _options
         None => return
     };
 
-    let clip =  match get_clip(streamer.id, _options.to_owned()).await {
-        Some(res) => res,
+    let clip_data =  match get_clip(streamer.id, _options.to_owned()).await {
+        Some(res) => res.data,
         None => return
     };
 
-    let clip_url = format_clip_url(clip.data.thumbnail_url.clone()).expect("error formatting clip url");
-    let clip_duration = clip.data.duration;
+    let game = match get_game_from_db(clip_data.game_id.clone()).await {
+        Some(game) => Some(game.name),
+        None => {
+            warn!("error getting game name for id {}, defaulting to none", clip_data.game_id);
+            None
+        },
+    };
+
+    let clip_url = format_clip_url(clip_data.thumbnail_url.clone()).expect("error formatting clip url");
+    let clip_duration = clip_data.duration;
 
     let clip_data: SoClipData = SoClipData { 
         clip_url, 
         streamer: streamer.login, 
-        profile_pic: streamer.profile_image_url, 
-        duration: clip_duration 
+        profile_pic: streamer.profile_image_url,
+        clipper: Some(clip_data.creator_name),
+        game,
+        clip_duration
     };
 
     SESSION.try_lock().expect("error acquiring lock").send_clip(clip_data, client_uuid.clone());

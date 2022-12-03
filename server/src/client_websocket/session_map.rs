@@ -5,9 +5,8 @@ use std::{
 use lazy_static::lazy_static;
 use tokio::sync::mpsc::UnboundedSender;
 use log::{info, error};
-use crate::irc_processor::commands::shoutout::SoClipData;
 use crate::twitch_websocket::twitch_ws::CONNECTION;
-use super::shoutout_structs::ClientConnectOptions;
+use super::shoutout_structs::{ClientConnectOptions, SoClipData};
 
 lazy_static! {
     pub static ref SESSION: Arc<Mutex<Sessions>> = {

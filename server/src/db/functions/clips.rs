@@ -46,7 +46,7 @@ pub async fn get_clip(broadcaster_id: String, options: ClientConnectOptions) -> 
     };
 }
 
-pub async fn fetch_clips(filter: Option<Document>, options: Option<FindOptions>) -> Option<Vec<Clip>> {
+async fn fetch_clips(filter: Option<Document>, options: Option<FindOptions>) -> Option<Vec<Clip>> {
     match COLLECTION.find(filter, options).await {
         Ok(cursor) => match cursor.try_collect::<Vec<Clip>>().await {
             Ok(clips) => match clips.len() {
@@ -94,7 +94,7 @@ fn get_find_options(filter_type: &FilterType) -> Option<FindOptions> {
                 .limit(*param)
                 .build(),
         ),
-        FilterType::Time { param } => None,
+        FilterType::Time { param: _ } => None,
     }
 }
 

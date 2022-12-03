@@ -16,11 +16,13 @@ pub struct ClientConnectMessage {
 }
 
 #[derive(Serialize, Debug)]
-pub struct ClipData {
+pub struct SoClipData {
     pub clip_url: String,
     pub streamer: String,
     pub profile_pic: String,
-    pub clip_duration: usize,
+    pub clipper: Option<String>,
+    pub game: Option<String>, // clipper and game are wrapped in option as a fallback
+    pub clip_duration: f64,
 }
 
 impl Default for ClientConnectOptions {
@@ -50,7 +52,6 @@ impl ClientConnectOptions {
         }
     }
 }
-
 
 pub enum FilterType {
     FullRandom, //default
