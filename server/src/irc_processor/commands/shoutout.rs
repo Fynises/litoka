@@ -60,7 +60,7 @@ async fn execute_shoutout(target_channel: String ,client_uuid: &String, _options
         None => return
     };
 
-    let clip_data =  match get_clip(streamer.id, _options.to_owned()).await {
+    let clip_data =  match get_clip(streamer.clone(), _options.to_owned()).await {
         Some(res) => res.data,
         None => return
     };
@@ -78,8 +78,8 @@ async fn execute_shoutout(target_channel: String ,client_uuid: &String, _options
 
     let clip_data: SoClipData = SoClipData { 
         clip_url, 
-        streamer: streamer.login, 
-        profile_pic: streamer.profile_image_url,
+        streamer: streamer.data.login, 
+        profile_pic: streamer.data.profile_image_url,
         clipper: Some(clip_data.creator_name),
         game,
         clip_duration

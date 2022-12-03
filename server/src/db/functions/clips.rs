@@ -2,7 +2,7 @@ use crate::{
     client_websocket::shoutout_structs::{ClientConnectOptions, FilterType},
     db::{
         db_client::DB_CLIENT, 
-        model::clip::{Clip, JsonClipData}
+        model::{clip::{Clip, JsonClipData}, user::User}
     }, 
     twitch_api::api_clips::api_fetch_clips, 
 };
@@ -25,23 +25,37 @@ lazy_static! {
         .collection("clips");
 }
 
-pub async fn get_clip(broadcaster_id: String, options: ClientConnectOptions) -> Option<Clip> {
+pub async fn get_clip(user: User, options: ClientConnectOptions) -> Option<Clip> {
+
+    if !user.user_has_clips {
+        return None
+    }
+
     let filter_type = options.parse_filter();
-    let query = get_filter(&filter_type, &broadcaster_id);
+    let query = get_filter(&filter_type, &user.data.id);
     let query_options = get_find_options(&filter_type);
 
     warn!("{query:?}");
     warn!("{query_options:?}");
 
-    match fetch_clips(query, query_options).await {
+    match fetch_clips(query.clone(), query_options.clone()).await {
         Some(clips) => {
             let rng = rand::thread_rng().gen_range(0..clips.len());
             return Some(clips.get(rng).expect("error extracting clip from map").clone())
         },
         None => {
-            warn!("no clips found for {} in db", broadcaster_id);
-            insert_all_clips(broadcaster_id).await;
-            return None
+            warn!("no clips found for {} in db", user.data.id);
+            insert_all_clips(user.data.id.clone()).await;
+            match fetch_clips(query, query_options).await {
+                Some(clips) => {
+                    let rng = rand::thread_rng().gen_range(0..clips.len());
+                    return Some(clips.get(rng).expect("error extracting clip from map").clone())
+                },
+                None => {
+                    warn!("no clips found for {} in db", user.data.id);
+                    return None
+                },
+            };
         },
     };
 }

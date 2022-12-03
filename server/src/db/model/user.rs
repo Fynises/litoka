@@ -4,14 +4,16 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct User {
     pub data: UserData,
-    pub date_last_checked: DateTime
+    pub date_last_checked: DateTime,
+    pub user_has_clips: bool,
 }
 
 impl User {
-    pub fn new_from_json(json_user_data: JsonUserData) -> Self {
+    pub fn new_from_json(json_user_data: JsonUserData, has_clips: Option<bool>) -> Self {
         Self { 
             data: UserData::from(json_user_data), 
             date_last_checked: DateTime::now(), 
+            user_has_clips: has_clips.unwrap_or(false)
         }
     }
 }
