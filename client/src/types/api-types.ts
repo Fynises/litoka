@@ -17,7 +17,8 @@ export interface ShoutOutURLParams {
   allow_vip: boolean,
   allow_subs: boolean,
   filter_type: string,
-  filter_params: string
+  filter_params: string,
+  disable_overrides: boolean
 }
 
 export interface ShoutOutOptions {

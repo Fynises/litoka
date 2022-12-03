@@ -33,8 +33,11 @@ const Player = () => {
           const optionsObj: ShoutOutURLParams = {
             channel: searchParams.get('channel').toLowerCase(),
             allow_mods: searchParams.get('allowMods') === 'true',
+            allow_vip: searchParams.get('allowVip') === 'true',
+            allow_subs: searchParams.get('allowSubs') === 'true',
             filter_type: searchParams.get('filterType'),
-            filter_params: searchParams.get('filterParams')
+            filter_params: searchParams.get('filterParams'),
+            disable_overrides: searchParams.get('disableOverrides') === 'true'
           };
 
           const shoutoutOptions: ShoutOutOptions = {

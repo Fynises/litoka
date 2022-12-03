@@ -9,6 +9,7 @@ pub struct ClientConnectOptions {
     pub allow_subs: bool,
     pub filter_type: Option<String>,
     pub filter_params: Option<i64>,
+    pub disable_overrides: bool
 }
 
 #[derive(Deserialize, Debug)]
@@ -36,6 +37,7 @@ impl Default for ClientConnectOptions {
             allow_subs: false,
             filter_type: None,
             filter_params: None,
+            disable_overrides: false
         }
     }
 }
