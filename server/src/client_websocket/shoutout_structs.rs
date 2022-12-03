@@ -5,6 +5,8 @@ use serde::{Deserialize, Serialize};
 pub struct ClientConnectOptions {
     pub channel: String,
     pub allow_mods: bool,
+    pub allow_vip: bool,
+    pub allow_subs: bool,
     pub filter_type: Option<String>,
     pub filter_params: Option<i64>,
 }
@@ -30,6 +32,8 @@ impl Default for ClientConnectOptions {
         ClientConnectOptions {
             channel: "".to_string(),
             allow_mods: true,
+            allow_vip: false,
+            allow_subs: false,
             filter_type: None,
             filter_params: None,
         }
