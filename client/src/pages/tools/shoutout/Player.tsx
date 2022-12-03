@@ -93,10 +93,11 @@ const Player = () => {
             style={{
               fontFamily: 'sans-serif',
               color: 'white',
-              marginTop: -2
+              fontSize: '20px',
+              marginTop: -10
             }}
           >
-            {`playing: ${clips[0].game}`}
+            <div style={{ paddingLeft: 12, paddingBottom: 1 }}>{`playing: ${clips[0].game}`}</div>
           </div>
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <ReactPlayer
@@ -113,10 +114,13 @@ const Player = () => {
             style={{
               fontFamily: 'sans-serif',
               color: 'white',
-              marginBottom: -2
+              fontSize: '20px',
+              display: 'flex',
+              marginTop: -24,
+              justifyContent: 'right'
             }}
           >
-            {`clipper: ${clips[0].clipper}`}
+            <div style={{ paddingRight: 12 }}>{`clipper: ${clips[0].clipper}`}</div>
           </div>
         </span>)
       }
