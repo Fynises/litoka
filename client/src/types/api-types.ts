@@ -13,12 +13,12 @@ export interface ClipData {
 
 export interface ShoutOutURLParams {
   channel: string,
-  allow_mods: boolean,
-  allow_vip: boolean,
-  allow_subs: boolean,
-  filter_type: string,
-  filter_params: string,
-  disable_overrides: boolean
+  allow_mods?: boolean,
+  allow_vip?: boolean,
+  allow_subs?: boolean,
+  filter_type?: string,
+  filter_params?: string,
+  disable_overrides?: boolean
 }
 
 export interface ShoutOutOptions {

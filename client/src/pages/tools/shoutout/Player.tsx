@@ -4,7 +4,7 @@ import { fetchWsUrl } from './api-app';
 import WebSocket from 'isomorphic-ws';
 import hash from 'object-hash';
 import ReactPlayer from 'react-player';
-import { ClipData, ShoutOutOptions, ShoutOutURLParams, WebSocketURLApiReturn } from '../../../types/api-types';
+import { ClipData, ShoutOutOptions, ShoutOutURLParams } from '../../../types/api-types';
 
 const Player = () => {
 
@@ -20,43 +20,76 @@ const Player = () => {
    * filterParams
    */
 
+
+  // TODO: move these functions to a helper file
+  const tryGetString = (query: string): string => {
+    const param = searchParams.get(query);
+    if (param !== null) {
+      return param as string;
+    } else {
+      return 'err';
+    }
+  };
+
+  const tryGetStringNullable = (query: string): string | undefined => {
+    const param = searchParams.get(query);
+    if (param !== null) {
+      return param as string;
+    } else {
+      return undefined;
+    }
+  };
+
+  const tryGetBool = (query: string): boolean => {
+    const param = searchParams.get(query);
+    if (param !== null) {
+      return param === 'true';
+    } else {
+      return false;
+    }
+  };
+
   useEffect(() => {
     const abortController = new AbortController();
     const signal = abortController.signal;
-    fetchWsUrl(signal).then((data: WebSocketURLApiReturn) => {
-      console.log(`fetched websocket url from server: ${data.ws_url}`);
-      try {
-        const ws = new WebSocket(data.ws_url);
-        ws.onopen = () => {
-          console.log('connecting to server websocket');
+    fetchWsUrl(signal).then((data) => {
+      if (data !== undefined) {
+        console.log(`fetched websocket url from server: ${data.ws_url}`);
+        try {
+          const ws = new WebSocket(data.ws_url);
+          ws.onopen = () => {
+            console.log('connecting to server websocket');
 
-          const optionsObj: ShoutOutURLParams = {
-            channel: searchParams.get('channel').toLowerCase(),
-            allow_mods: searchParams.get('allowMods') === 'true',
-            allow_vip: searchParams.get('allowVip') === 'true',
-            allow_subs: searchParams.get('allowSubs') === 'true',
-            filter_type: searchParams.get('filterType'),
-            filter_params: searchParams.get('filterParams'),
-            disable_overrides: searchParams.get('disableOverrides') === 'true'
+            const optionsObj: ShoutOutURLParams = {
+              channel: tryGetString('channel'),
+              allow_mods: tryGetBool('allowMods'),
+              allow_vip: tryGetBool('allowVip'),
+              allow_subs: tryGetBool('allowSubs'),
+              filter_type: tryGetStringNullable('filterType'),
+              filter_params: tryGetStringNullable('filterParams'),
+              disable_overrides: tryGetBool('disableOverrides')
+            };
+
+            const shoutoutOptions: ShoutOutOptions = {
+              options: optionsObj,
+              hash: hash(optionsObj)
+            };
+
+            ws.send(JSON.stringify(shoutoutOptions));
           };
 
-          const shoutoutOptions: ShoutOutOptions = {
-            options: optionsObj,
-            hash: hash(optionsObj)
+          //placeholder for reference later
+          ws.onmessage = (data) => {
+            const dataJson: ClipData = JSON.parse(data.data.toString());
+            console.log(`data recieved: ${dataJson}`);
+            console.log(`url recieved: ${dataJson.clip_url}`);
+            setClips(previous => [...previous, dataJson]);
           };
-
-          ws.send(JSON.stringify(shoutoutOptions));
-        };
-
-        //placeholder for reference later
-        ws.onmessage = (data) => {
-          const dataJson: ClipData = JSON.parse(data.data.toString());
-          console.log(`data recieved: ${dataJson}`);
-          console.log(`url recieved: ${dataJson.clip_url}`);
-          setClips(previous => [...previous, dataJson]);
-        };
-      } catch (err) {
-        console.log(err);
+        } catch (err) {
+          console.log(err);
+        }
+      } else {
+        console.log('error fetching websocket url from server');
       }
     });
   }, []);

@@ -91,7 +91,7 @@ const ShoutoutConfig = () => {
   };
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(resultUrl);
+    navigator.clipboard.writeText(resultUrl as string);
     handleAlertOpen();
   };
 
