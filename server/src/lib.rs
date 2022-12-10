@@ -19,6 +19,7 @@ pub struct Config {
     pub client_only: bool, // disables connection to twitch IRC to test client only
     pub twitch_chat_url: String,
     pub twitch_client_id: String,
+    pub twitch_auth_redirect: String,
     pub twitch_client_secret: String,
     pub twitch_access_token: String,
     pub twitch_oauth_token: String,
@@ -38,6 +39,7 @@ impl Default for Config {
             client_only: false,
             twitch_chat_url: "".to_string(),
             twitch_client_id: "".to_string(),
+            twitch_auth_redirect: "".to_string(),
             twitch_client_secret: "".to_string(),
             twitch_access_token: "".to_string(),
             twitch_oauth_token: "".to_string(),

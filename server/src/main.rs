@@ -29,6 +29,7 @@ async fn main() -> Result<()> {
             .wrap(Logger::default())
             .service(routes::index_routes::index)
             .service(routes::api_routes::get_web_socket)
+            .service(routes::api_routes::get_auth_params)
             .service(client_websocket::websocket_route::client_ws)
             .service(
                 Files::new("/dist", lib::CONFIG.dist_path.as_str())

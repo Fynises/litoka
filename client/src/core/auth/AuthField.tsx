@@ -3,7 +3,6 @@ import { Box, Button, Link } from '@mui/material';
 import { useState, useEffect } from 'react';
 import { fetchAuthParams } from './api-auth';
 import { v4 as uuidv4 } from 'uuid';
-import { URLSearchParams } from 'url';
 
 const twitchAuthBaseUrl = 'https://id.twitch.tv/oauth2/authorize?';
 
