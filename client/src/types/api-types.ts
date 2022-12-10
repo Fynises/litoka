@@ -25,3 +25,9 @@ export interface ShoutOutOptions {
   options: ShoutOutURLParams,
   hash: string
 }
+
+export interface ApiAuthParams {
+  client_id: string,
+  redirect_uri: string,
+  scope: string,
+}

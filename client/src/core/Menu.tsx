@@ -6,11 +6,12 @@ import {
   Typography,
   Box,
   IconButton,
-  Drawer
+  Drawer,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import MenuList from './MenuList';
 import { Outlet } from 'react-router-dom';
+import AuthField from './auth/AuthField';
 
 const Menu = () => {
 
@@ -34,8 +35,8 @@ const Menu = () => {
   );
 
   return (
-    <Box>
-      <AppBar position='static' elevation={0} enableColorOnDark>
+    <Box sx={{ flexGrow: 1 }}>
+      <AppBar position='static' elevation={0} enableColorOnDark sx={{ backgroundColor: '#40826d' }}>
         <Toolbar>
           <IconButton
             size='large'
@@ -57,6 +58,7 @@ const Menu = () => {
           <Typography variant='h6' component='div' sx={{ flexGrow: 1 }}>
             Litoka open source stream tools
           </Typography>
+          <AuthField />
         </Toolbar>
       </AppBar>
       <Outlet />

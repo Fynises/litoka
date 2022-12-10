@@ -8,6 +8,7 @@ use crate::lib;
 #[get("/config/{_a}")]
 #[get("/tools")]
 #[get("/tools/{_a}")]
+#[get("/twitchcallback")]
 pub async fn index() -> Result<NamedFile> {
     Ok(NamedFile::open(lib::CONFIG.index_path.as_str()).unwrap())
 }
