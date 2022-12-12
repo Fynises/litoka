@@ -4,7 +4,7 @@ import { fetchWsUrl } from './api-app';
 import WebSocket from 'isomorphic-ws';
 import hash from 'object-hash';
 import ReactPlayer from 'react-player';
-import { ClipData, ShoutOutOptions, ShoutOutURLParams } from '../../../types/api-types';
+import { ClipData, ShoutOutOptions, ShoutOutURLParams } from '../../types/api-types';
 
 const Player = () => {
 
