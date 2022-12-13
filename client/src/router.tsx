@@ -3,12 +3,13 @@ import { createBrowserRouter } from 'react-router-dom';
 import { ThemeProvider } from '@mui/system';
 import { CssBaseline } from '@mui/material';
 import { createTheme } from '@mui/material/styles';
-import Home from './pages/main/home/Home';
+import Home from './main/home/Home';
 import Menu from './core/Menu';
-import Todo from './pages/misc/Todo';
-import Shoutout from './pages/tools/shoutout/Shoutout';
-import ShoutoutConfig from './pages/main/shoutout/ShoutoutConfig';
-import AuthPage from './pages/main/auth/AuthPage';
+import Todo from './misc/Todo';
+import Shoutout from './tools/shoutout/Shoutout';
+import ShoutoutConfig from './main/shoutout/ShoutoutConfig';
+import AuthPage from './core/auth/AuthPage';
+import { CookiesProvider } from 'react-cookie';
 
 const makeTheme = createTheme({
   palette: {
@@ -22,10 +23,12 @@ const router = createBrowserRouter([
   {
     path: '/',
     element: (
-      <ThemeProvider theme={makeTheme}>
-        <CssBaseline />
-        <Menu />
-      </ThemeProvider>
+      <CookiesProvider>
+        <ThemeProvider theme={makeTheme}>
+          <CssBaseline />
+          <Menu />
+        </ThemeProvider>
+      </CookiesProvider>
     ),
     children: [
       {
